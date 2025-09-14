@@ -13,6 +13,6 @@ with open(argv[1] + '/' + 'contig.fasta', 'w') as f:
         c = dbg.get_longest_contig()
         if c is None:
             break
-        # print(i, len(c))
+        print(i, len(c))
         # f.write('>contig_%d\n' % i)
         # f.write(c + '\n')

@@ -1,3 +1,5 @@
+import copy
+
 def reverse_complement(key):
     complements = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
     key = list(key[::-1])
@@ -11,14 +13,15 @@ class Node:
     _count: int
     visited: bool
     depth: int
-    # max_depth_child:
+    max_depth_child: Optional[int]
+
     def __init__(self, kmer: str):
         self.kmer = kmer
         self._children = set()
         self._count = 0
         self.visited = False
         self.depth = 0
-        # self.max_depth_child = None
+        self.max_depth_child = None
     
     def add_child(self, kmer):
         self._children.add(kmer)
@@ -29,7 +32,16 @@ class Node:
     def reset(self):
         self.visited = False
         self.depth = 0
-        # self.max_depth_child = None
+        self.max_depth_child = None
+    
+    def get_count(self):
+        return self._count
+    
+    def get_children(self):
+        return list(self._children)
+    
+    def remove_children(self, target):
+        self._children = self._children - target
 
 class DBG:
     k: int
@@ -61,7 +73,6 @@ class DBG:
                     self._add_arc(a, b)
                     c, d = rc[i : i + self.k], rc[i + 1 : i + 1 + self.k]
                     self._add_arc(c, d)
-                    return
                     
     def _add_node(self, kmer: str):
         if kmer not in self.kmer2idx:
@@ -80,7 +91,58 @@ class DBG:
     def _reset(self):
         for idx in self.nodes.keys():
             self.nodes[idx].reset()
+
+    def _get_count(self, child):
+        return self.nodes[child].get_count()
+
+    def _get_sorted_children(self, idx):
+        children = self.nodes[idx].get_children()
+        children.sort(key=self._get_count, reverse=True)
+        return children
+    
+    def _get_depth(self, idx):
+        if not self.nodes[idx].visited:
+            self.nodes[idx].visited = True
+            children = self._get_sorted_children(idx)
+            max_depth, max_child = 0, None
+            for child in children:
+                depth = self._get_depth(child)
+                if depth > max_depth:
+                    max_depth, max_child = depth, child
+            self.nodes[idx].depth, self.nodes[idx].max_depth_child = max_depth + 1, max_child
+        return self.nodes[idx].depth
+    
+    def _get_longest_path(self):
+        max_depth, max_idx = 0, None
+        for idx in self.nodes.keys():
+            depth = self._get_depth(idx)
+            if depth > max_depth:
+                max_depth, max_idx = depth, idx
+
+        path: List[int] = []
+        while max_idx is not None:
+            path.append(max_idx)
+            max_idx = self.nodes[max_idx].max_depth_child
+        return path
+
+    def _concat_path(self, path):
+        if len(path) < 1:
+            return None
+        concat = copy.copy(self.nodes[path[0]].kmer)
+        for i in range(1, len(path)):
+            concat += self.nodes[path[i]].kmer[-1]
+        return concat
+    
+    def _delete_path(self, path):
+        for idx in path:
+            del self.nodes[idx]
+        path_set = set(path)
+        for idx in self.nodes.keys():
+            self.nodes[idx].remove_children(path_set)
     
     def get_longest_contig(self):
         self._reset()
-        return
+        path = self._get_longest_path()
+        contig = self._concat_path(path)
+        self._delete_path(path)
+        return contig
