@@ -1,0 +1,16 @@
+def read_fasta(path, name):
+    data = []
+    # TODO: use os to join path
+    with open(path + '/' + name, 'r') as f:
+        for line in f.readlines():
+            line = line.strip()
+            if line[0] != '>':
+                data.append(line)
+    print(name, len(data), len(data[0]))
+    return data
+
+def read_data(path):
+    short1 = read_fasta(path, "short_1.fasta")
+    short2 = read_fasta(path, "short_2.fasta")
+    long = read_fasta(path, "long.fasta")
+    return short1, short2, long
