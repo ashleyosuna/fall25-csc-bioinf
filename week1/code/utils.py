@@ -1,6 +1,5 @@
 def read_fasta(path, name):
     data = []
-    # TODO: use os to join path
     with open(path + '/' + name, 'r') as f:
         for line in f.readlines():
             line = line.strip()
