@@ -2,8 +2,9 @@ import sys
 from utils import read_data
 from dbg import DBG
 # from python import os
+# from python import sys as sysp
 
-# sys.setrecursionlimit(1000000)
+# sysp.setrecursionlimit(1000000)
 
 argv = sys.argv
 short1, short2, long = read_data(argv[1])
