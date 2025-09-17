@@ -14,9 +14,10 @@ printf "%-10s %-10s %-10s %-10s\n" "Dataset" "Language" "Runtime" "N50"
 echo "---------------------------------------------------------"
 
 for d in $data; do
-    #python
+    #### python ####
     start=$(date +%s)
     
+    # redirect output to a file recording lengths of the contigs
     python3 $REPOSITORY/main.py $DATA_DIRECTORY/$d > $TESTS_DIRECTORY/lengths_python_$d.txt
     
     end=$(date +%s)
@@ -30,8 +31,10 @@ for d in $data; do
     printf "%-10s %-10s %-10s %-10d\n" ${d} "python" ${formatted} ${n50_python}
 
     
-    # codon
+    #### codon ####
     start=$(date +%s)
+
+    # redirect output to a file recording lengths of the contigs
     codon run -release $CODE_DIRECTORY/main.py $DATA_DIRECTORY/$d > $TESTS_DIRECTORY/lengths_codon_$d.txt
     end=$(date +%s)
 
