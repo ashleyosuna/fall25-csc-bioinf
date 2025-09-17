@@ -1,9 +1,12 @@
 #!/bin/bash
+set -euxo pipefail
+PATH=${PATH}:${HOME}/.codon/bin
+
 CODE_DIRECTORY="week1/code"
 DATA_DIRECTORY="week1/data"
 REPOSITORY="week1/resources"
 TESTS_DIRECTORY="week1/tests"
-data="data1 data2 data3 data4"
+data="data1"
 
 printf "%-10s %-10s %-10s %-10s\n" "Dataset" "Language" "Runtime" "N50"
 echo "---------------------------------------------------------"
