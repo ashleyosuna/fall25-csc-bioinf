@@ -6,7 +6,7 @@ CODE_DIRECTORY="week1/code"
 DATA_DIRECTORY="week1/data"
 REPOSITORY="week1/resources"
 TESTS_DIRECTORY="week1/tests"
-data="data4"
+data="data1 data2 data3 data4"
 
 ulimit -s 8192000
 
@@ -15,19 +15,19 @@ echo "---------------------------------------------------------"
 
 for d in $data; do
     #python
-    # start=$(date +%s)
+    start=$(date +%s)
     
-    # python3 $REPOSITORY/main.py $DATA_DIRECTORY/$d > $TESTS_DIRECTORY/lengths_python_$d.txt
+    python3 $REPOSITORY/main.py $DATA_DIRECTORY/$d > $TESTS_DIRECTORY/lengths_python_$d.txt
     
-    # end=$(date +%s)
+    end=$(date +%s)
     
-    # elapsed=$(( end - start ))
+    elapsed=$(( end - start ))
     
-    # formatted=$(printf "%d:%02d:00" $((elapsed/60)) $((elapsed%60)))
+    formatted=$(printf "%d:%02d:00" $((elapsed/60)) $((elapsed%60)))
     
     #calculating n50
-    # n50_python=$(codon run -release $CODE_DIRECTORY/n50.py $TESTS_DIRECTORY/lengths_python_$d.txt)
-    # printf "%-10s %-10s %-10s %-10d\n" ${d} "python" ${formatted} ${n50_python}
+    n50_python=$(codon run -release $CODE_DIRECTORY/n50.py $TESTS_DIRECTORY/lengths_python_$d.txt)
+    printf "%-10s %-10s %-10s %-10d\n" ${d} "python" ${formatted} ${n50_python}
 
     
     # codon
