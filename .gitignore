@@ -1,3 +1,5 @@
 __pycache__/
 # */tests/*.txt
 contig*.fasta
+*.json
+week1/tests/*.txt
