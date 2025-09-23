@@ -52,10 +52,6 @@ class Record():
         # else:
         #     return list.__getitem__(self, key)
         # return list.__getitem__(self, key)
-        
-# record = Record()
-# record.append("ACGT")
-# record.__getitem__("ACGT")
 
 def _read_version(record: Record, handle):
     for line in handle:
@@ -127,9 +123,3 @@ def _read_lpm(record, handle, length, num_occurrences):
             break
     c = dict(zip(record.alphabet, counts))
     return c
-
-with open("week2/tests/meme.out") as f:
-    record = read(f)
-    print(record.version)
-    print(record.alphabet)
-    print(record.background)
