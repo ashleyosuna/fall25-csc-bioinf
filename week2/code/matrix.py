@@ -39,7 +39,7 @@ class GenericPositionMatrix(dict[str, List[float]]):
             lines.append(line)
         text = "\n".join(lines) + "\n"
         return text
-    
+
     @property
     def consensus(self):
         sequence = ""
@@ -65,11 +65,131 @@ class GenericPositionMatrix(dict[str, List[float]]):
                     sequence_letter = letter
             sequence += sequence_letter
         return Seq.Seq(sequence)
-    
-#     # TODO: degenerate consensus
 
-#     # TODO: calculate consensus
-    
+    @property
+    def degenerate_consensus(self):
+        """Return the degenerate consensus sequence."""
+        degenerate_nucleotide: dict[str, str] = {
+            "A": "A",
+            "C": "C",
+            "G": "G",
+            "T": "T",
+            "U": "U",
+            "AC": "M",
+            "AG": "R",
+            "AT": "W",
+            "AU": "W",
+            "CG": "S",
+            "CT": "Y",
+            "CU": "Y",
+            "GT": "K",
+            "GU": "K",
+            "ACG": "V",
+            "ACT": "H",
+            "ACU": "H",
+            "AGT": "D",
+            "AGU": "D",
+            "CGT": "B",
+            "CGU": "B",
+            "ACGT": "N",
+            "ACGU": "N",
+        }
+        sequence = ""
+        for i in range(self.length):
+
+            def get(nucleotide):
+                return self[nucleotide][i]  # noqa: B023
+
+            nucleotides = sorted(self, key=get, reverse=True)
+
+            counts = [self[c][i] for c in nucleotides]
+            # Follow the Cavener rules:
+            if counts[0] > sum(counts[1:]) and counts[0] > 2 * counts[1]:
+                key = nucleotides[0]
+            elif 4 * sum(counts[:2]) > 3 * sum(counts):
+                key = "".join(sorted(nucleotides[:2]))
+            elif counts[3] == 0:
+                key = "".join(sorted(nucleotides[:3]))
+            else:
+                key = "ACGT"
+            
+            # nucleotide = degenerate_nucleotide.get(key, key)
+            if key in degenerate_nucleotide:
+                nucleotide = degenerate_nucleotide[key]
+            else:
+                nucleotide = key
+
+            sequence += nucleotide
+        return Seq.Seq(sequence)
+
+    def calculate_consensus(self, substitution_matrix=None, plurality=None, identity=0, setcase=None):
+        """Return the consensus sequence (as a string) for the given parameters.
+
+        This function largely follows the conventions of the EMBOSS `cons` tool.
+
+        Arguments:
+         - substitution_matrix - the scoring matrix used when comparing
+           sequences. By default, it is None, in which case we simply count the
+           frequency of each letter.
+           Instead of the default value, you can use the substitution matrices
+           available in Bio.Align.substitution_matrices. Common choices are
+           BLOSUM62 (also known as EBLOSUM62) for protein, and NUC.4.4 (also
+           known as EDNAFULL) for nucleotides. NOTE: This has not yet been
+           implemented.
+         - plurality           - threshold value for the number of positive
+           matches, divided by the total count in a column, required to reach
+           consensus. If substitution_matrix is None, then this argument must
+           be None, and is ignored; a ValueError is raised otherwise. If
+           substitution_matrix is not None, then the default value of the
+           plurality is 0.5.
+         - identity            - number of identities, divided by the total
+           count in a column, required to define a consensus value. If the
+           number of identities is less than identity * total count in a column,
+           then the undefined character ('N' for nucleotides and 'X' for amino
+           acid sequences) is used in the consensus sequence. If identity is
+           1.0, then only columns of identical letters contribute to the
+           consensus. Default value is zero.
+         - setcase             - threshold for the positive matches, divided by
+           the total count in a column, above which the consensus is in
+           upper-case and below which the consensus is in lower-case. By
+           default, this is equal to 0.5.
+        """
+        alphabet = self.alphabet
+        if set(alphabet).union(set("ACGTUN-")) == set("ACGTUN-"):
+            undefined = "N"
+        else:
+            undefined = "X"
+        if substitution_matrix is None:
+            if plurality is not None:
+                raise ValueError(
+                    "plurality must be None if substitution_matrix is None"
+                )
+            sequence = ""
+            for i in range(self.length):
+                maximum: float = 0.0
+                total: float = 0.0
+                for letter in alphabet:
+                    count = self[letter][i]
+                    total += count
+                    if count > maximum:
+                        maximum = count
+                        consensus_letter = letter
+                if maximum < identity * total:
+                    consensus_letter = undefined
+                else:
+                    if setcase is None:
+                        setcase_threshold = total / 2
+                    else:
+                        setcase_threshold = setcase * total
+                    if maximum <= setcase_threshold:
+                        consensus_letter = consensus_letter.lower()
+                sequence += consensus_letter
+        else:
+            raise NotImplementedError(
+                "calculate_consensus currently only supports substitution_matrix=None"
+            )
+        return sequence
+
     @property
     def gc_content(self):
         """Compute the fraction GC content."""
@@ -134,11 +254,13 @@ print(positionMatrix)
 # print(positionMatrix.consensus)
 # print(positionMatrix.anticonsensus)
 # print(positionMatrix.gc_content)
+# print(positionMatrix.degenerate_consensus)
+# print(positionMatrix.calculate_consensus())
 
-rc = positionMatrix.reverse_complement()
-print(rc)
+# rc = positionMatrix.reverse_complement()
+# print(rc)
 
 # TODO: fix whatever the hell is wrong here
-freqMatrix = FrequencyPositionMatrix(alphabet="ACGT", values={"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]})
+# freqMatrix = FrequencyPositionMatrix(alphabet="ACGT", values={"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]})
 # print(freqMatrix)
-print(freqMatrix.normalize(pseudocounts=1))
+# print(freqMatrix.normalize(pseudocounts=1))
