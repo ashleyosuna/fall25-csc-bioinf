@@ -16,8 +16,10 @@ class ScoreDistribution:
     mo_density: List[float]
     bg_density: List[float]
 
-    def __init__(self, motif=None, precision: int =10**3, pssm=None, background: Optional[Dict[str, float]] =None):
+    def __init__(self, motif=None, precision: int=10**3, pssm=None, background: Optional[Dict[str, float]] =None):
         """Initialize the class."""
+        
+        # i think this can be removed, since we only ever call this from Matrix.distribution, which always passes pssm and never motif
         if pssm is None:
             assert motif is not None, "motif must be provided if pssm is None"
             self.min_score = min(0.0, motif.min_score())
@@ -26,19 +28,24 @@ class ScoreDistribution:
             self.ic = motif.ic()
         else:
             assert background is not None, "background must be provided if pssm is not None"
-            self.min_score = min(0.0, pssm.min)
-            self.interval = max(0.0, pssm.max) - self.min_score
+            self.min_score = min(0.0, pssm.min) # minimal possible score for this motif
+            self.interval = max(0.0, pssm.max) - self.min_score # the range of possible scores for this motif
             self.n_points = precision * pssm.length
-            self.ic = pssm.mean(background)
+            self.ic = pssm.mean(background) # information content (how much a motif deviates from random)
+
+        # initialize 2 probability distributions
+        # mo_density: for motif containing sequences
+        # bg_density: for background sequences
         self.step = self.interval / (self.n_points - 1)
         self.mo_density = [0.0] * self.n_points
-        self.mo_density[-self._index_diff(self.min_score)] = 1.0
+        self.mo_density[-self._index_diff(self.min_score)] = 1.0 # sets the bin corresponding to the min possible score to have a probability of 1.0
         self.bg_density = [0.0] * self.n_points
         self.bg_density[-self._index_diff(self.min_score)] = 1.0
-        if pssm is None:
+        if pssm is None: # pssm should never be None in our case -- so I think we do not need to implement modify
             for lo, mo in zip(motif.log_odds(), motif.pwm()):
                 self.modify(lo, mo, motif.background)
         else:
+            # loop through each position in motif, create distributions for this position, and update existing distributions
             for position in range(pssm.length):
                 mo_new = [0.0] * self.n_points
                 bg_new = [0.0] * self.n_points
@@ -59,6 +66,7 @@ class ScoreDistribution:
     def _add(self, i: int, j: int) -> int:
         return max(0, min(self.n_points - 1, i + j))
 
+    # I think we can get rid of this, since ScoreDistribution is only ever called with pssm
     def modify(self, scores: Dict[str, float], mo_probs: Dict[str, float], bg_probs: Dict[str, float]) -> None:
         """Modify motifs and background density."""
         mo_new = [0.0] * self.n_points
