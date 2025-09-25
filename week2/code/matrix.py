@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 from python import Bio.Seq as Seq
 import math
+import numpy as np
 # # from python import numbers
 # import math
 # import numpy as np
@@ -343,9 +344,75 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
         self.alphabet = alphabet
         self.length = super().__getlength__()
 
+#   # TODO: convert c code to codon?
+    # def calculate(self, sequence):
+    #     if sorted(self.alphabet) != ["A", "C", "G", "T"]:
+    #         raise ValueError(
+    #             f"PSSM has wrong alphabet: {self.alphabet} - Use only with DNA motifs"
+    #         )
+
+    #     try:
+    #         # sequence = bytes(sequence)
+    #         sequence = sequence.encode("utf-8")
+    #     except TypeError:  # str
+    #         try:
+    #             sequence = sequence.encode("ascii")
+    #         except TypeError:
+    #             raise ValueError(
+    #                 "sequence should be a Seq, MutableSeq, string, or bytes-like object"
+    #             ) from None
+    #         except Exception:
+    #             raise ValueError(
+    #                 "sequence should contain ASCII characters only"
+    #             ) from None
+    #     except Exception:
+    #         raise ValueError(
+    #             "sequence should be a Seq, MutableSeq, string, or bytes-like object"
+    #         ) from None
+
+    #     n = len(sequence)
+    #     m = self.length
+    #     scores = np.empty(n - m + 1, np.float32)
+    #     logodds = np.array(
+    #         [[self[letter][i] for letter in "ACGT"] for i in range(m)], float
+    #     )
+    #     _pwm.calculate(sequence, logodds, scores) # TODO: check out Bio/motifs/_pwm.c code to see what it does
+
+    #     if len(scores) == 1:
+    #         return scores[0]
+    #     else:
+    #         return scores
+
+#   # TODO: this whole thing
+    # def search(self, sequence, threshold=0.0, both=True, chunksize=10**6):
+
+    @property
+    def max(self):
+        """Maximal possible score for this motif.
+
+        returns the score computed for the consensus sequence.
+        """
+        score = 0.0
+        letters = self.alphabet
+        for position in range(self.length):
+            score += max(self[letter][position] for letter in letters)
+        return score
+
+    @property
+    def min(self):
+        """Minimal possible score for this motif.
+
+        returns the score computed for the anticonsensus sequence.
+        """
+        score = 0.0
+        letters = self.alphabet
+        for position in range(self.length):
+            score += min(self[letter][position] for letter in letters)
+        return score
+
 values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
-positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
-print(positionMatrix)
+# positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
+# print(positionMatrix)
 # print(positionMatrix.consensus)
 # print(positionMatrix.anticonsensus)
 # print(positionMatrix.gc_content)
@@ -365,5 +432,8 @@ print(positionMatrix)
 # print(positionMatrix2)
 # print('logodds', positionMatrix2.log_odds())
 
-# positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
-# print(positionSpecific)
+positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
+print(positionSpecific)
+# print(positionSpecific.max)
+# print(positionSpecific.min)
+# print(positionSpecific.mean())
