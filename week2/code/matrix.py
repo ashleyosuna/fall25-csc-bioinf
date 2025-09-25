@@ -1,44 +1,71 @@
+from typing import Dict, List, Optional
 from python import Bio.Seq as Seq
-# import Bio.Seq as Seq
+from python import numbers
+import math
+import numpy as np
+# from python import Bio.motifs._pwm as pwm
 
-class GenericPositionMatrix(dict[str, List[float]]):
+class GenericPositionMatrix:
     alphabet: str
     length: int
+    data: Dict[str, List[float]]
 
-    def __init__(self, alphabet: str, values: dict[str, List[int]]):
-        super().__init__()
-        length = None
+    def __init__(self, alphabet: str, values: Dict[str, List[int]]):
+        self.data: Dict[str, List[float]] = Dict[str, List[float]]()
         self.alphabet = alphabet
+
+        length = None
         for letter in alphabet:
+            vals: List[float] = [float(v) for v in values[letter]]
             if length is None:
-                self.length = len(values[letter])
-            elif self.length != len(values[letter]):
+                self.length = len(vals)
+            elif length != len(vals):
                 raise Exception("data has inconsistent lengths")
-            self[letter] = [float(val) for val in values[letter]]
-        print('->', super())
+            self.data[letter] = vals
     
-    def __init__(self, alphabet: str, values: dict[str, List[float]]):
-        super().__init__()
-        length = None
+    def __init__(self, alphabet: str, values: Dict[str, List[float]]):
+        self.data: Dict[str, List[float]] = Dict[str, List[float]]()
         self.alphabet = alphabet
+
+        length = None
         for letter in alphabet:
+            vals: List[float] = [float(v) for v in values[letter]]  # normalize here
             if length is None:
-                self.length = len(values[letter])
-            elif self.length != len(values[letter]):
+                self.length = len(vals)
+            elif length != len(vals):
                 raise Exception("data has inconsistent lengths")
-            self[letter] = values[letter]
+            self.data[letter] = vals
 
     def __str__(self):
         """Return a string containing nucleotides and counts of the alphabet in the Matrix."""
-        words = [f"{i:6}" for i in range(self.length)]
+        words = [f"{i:6d}" for i in range(self.length)]
         line = "   " + " ".join(words)
         lines = [line]
         for letter in self.alphabet:
-            words = [f"{val:6.2f}" for val in self[letter]]
+            words = [f"{val:6.2f}" for val in self.data[letter]]
             line = f"{letter}: " + " ".join(words)
             lines.append(line)
         text = "\n".join(lines) + "\n"
         return text
+    
+    # TODO: finish
+    def __getitem__(self, key) -> List[float] | Dict[str, List[float]]:
+        if isinstance(key, str):
+            return self.data[key]
+
+        elif isinstance(key, int):
+            return self.data[self.alphabet[key]]
+
+        # elif isinstance(key, slice):
+        #     start, stop, stride = key.indices(len(self.alphabet))
+        #     letters = [self.alphabet[i] for i in range(start, stop, stride)]
+        #     d: Dict[str, List[float]] = Dict[str, List[float]]()
+        #     for letter in letters:
+        #         d[letter] = Dict[str, List[float]].__getitem__(self, letter)
+        #     return d
+
+        else:
+            raise KeyError(f"Unsupported key type: {key}")
 
     @property
     def consensus(self):
@@ -222,35 +249,103 @@ class GenericPositionMatrix(dict[str, List[float]]):
     def __getlength__(self):
         return self.length
     
-class FrequencyPositionMatrix(GenericPositionMatrix):
-    # alphabet: str
-    # length: int
-
-    def __init__(self, alphabet: str, values: dict[str, List[int]]):
-        super().__init__(alphabet=alphabet, values=values)
-        self.alphabet = super().__getalphabet__()
-        self.length = super().__getlength__()
-        print('=>', super())
+    def __getdata__(self):
+        return self.data
     
-    # def normalize(self):
-    #     return
+class FrequencyPositionMatrix(GenericPositionMatrix):
+    alphabet: str
+    length: int
+
+    def __init__(self, alphabet: str, values: Dict[str, List[int]]):
+        super().__init__(alphabet=alphabet, values=values)
+        self.length = super().__getlength__()
+        self.alphabet = super().__getalphabet__()
 
     def normalize(self, pseudocounts: int = 0):
-        print('here', self.alphabet, self.length)
-        counts: dict[str, List[float]] = {}
+        counts: Dict[str, List[float]] = {}
         pseudocounts = float(pseudocounts)
         for letter in self.alphabet:
             counts[letter] = [pseudocounts] * self.length
-        print(counts)
         for i in range(self.length):
             for letter in self.alphabet:
                 counts[letter][i] += self[letter][i]
         return counts
+    
+class PositionWeightMatrix(GenericPositionMatrix):
+    length: int
+    alphabet: str
+
+    def __init__(self, alphabet: str, counts: Dict[str, List[float]]):
+        super().__init__(alphabet=alphabet, values=counts)
+        self.length = super().__getlength__()
+        self.alphabet = super().__getalphabet__()
+
+        for i in range(self.length):
+            total = sum(self[letter][i] for letter in alphabet)
+            for letter in alphabet:
+                self[letter][i] /= total
+    
+    def __init__(self, alphabet: str, counts: Dict[str, List[int]]):
+        super().__init__(alphabet=alphabet, values=counts)
+        self.length = super().__getlength__()
+        self.alphabet = super().__getalphabet__()
+
+        for i in range(self.length):
+            total = sum(self[letter][i] for letter in alphabet)
+            for letter in alphabet:
+                self[letter][i] /= total
+    
+    def log_odds(self, background: Optional[Dict[str, float]]=None):
+        values = {}
+        alphabet = self.alphabet
+
+        if background is None:
+            background = dict.fromkeys(self.alphabet, 1.0)
+        else:
+            background = dict(background)
+        total = sum(background.values())
+
+        for letter in alphabet:
+            background[letter] /= total
+            values[letter] = []
+        for i in range(self.length):
+            for letter in alphabet:
+                b = background[letter]
+
+                if b > 0:
+                    p = self[letter][i]
+                    if p > 0:
+                        logodds = math.log(p / b, 2)
+                    else:
+                        logodds = -math.inf
+                else:
+                    p = self[letter][i]
+                    if p > 0:
+                        logodds = math.inf
+                    else:
+                        logodds = math.nan
+                values[letter].append(logodds)
+        pssm = PositionSpecificScoringMatrix(alphabet=alphabet, values=values)
+        return pssm
+    
+class PositionSpecificScoringMatrix(GenericPositionMatrix):
+    length: int
+    alphabet: str
+
+    def __init__(self, alphabet: str, values=Dict[str, List[float]]):
+        super().__init__(alphabet=alphabet, values=values)
+        self.length = super().__getlength__()
+        self.alphabet = super().__getalphabet__()
+    
+    def __init__(self, alphabet: str, values=Dict[str, List[int]]):
+        super().__init__(alphabet=alphabet, values=values)
+        self.length = super().__getlength__()
+        self.alphabet = super().__getalphabet__()
 
 
-
-positionMatrix = GenericPositionMatrix(alphabet="ACGT", values={"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]})
-print(positionMatrix)
+# values = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
+# positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
+# print(positionMatrix['A'])
 # print(positionMatrix.consensus)
 # print(positionMatrix.anticonsensus)
 # print(positionMatrix.gc_content)
@@ -264,3 +359,9 @@ print(positionMatrix)
 # freqMatrix = FrequencyPositionMatrix(alphabet="ACGT", values={"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]})
 # print(freqMatrix)
 # print(freqMatrix.normalize(pseudocounts=1))
+
+# positionMatrix2 = PositionWeightMatrix(alphabet="ACGT", counts=values)
+# print(positionMatrix2)
+# print('logodds', positionMatrix2.log_odds())
+
+# positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
