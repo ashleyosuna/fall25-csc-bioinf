@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional
 from python import Bio.Seq as Seq
-# from python import numbers
-import math
-import numpy as np
-# from python import Bio.motifs._pwm as pwm
+# # from python import numbers
+# import math
+# import numpy as np
+# # from python import Bio.motifs._pwm as pwm
 
 class GenericPositionMatrix:
     alphabet: str
@@ -48,7 +48,7 @@ class GenericPositionMatrix:
         text = "\n".join(lines) + "\n"
         return text
     
-    # TODO: finish
+#     # TODO: finish
     def __getitem__(self, key) -> List[float] | Dict[str, List[float]]:
         if isinstance(key, str):
             return self.data[key]
@@ -252,95 +252,96 @@ class GenericPositionMatrix:
     def __getdata__(self):
         return self.data
     
-class FrequencyPositionMatrix(GenericPositionMatrix):
-    alphabet: str
-    length: int
+# class FrequencyPositionMatrix(GenericPositionMatrix):
+#     alphabet: str
+#     length: int
 
-    def __init__(self, alphabet: str, values: Dict[str, List[int]]):
-        super().__init__(alphabet=alphabet, values=values)
-        self.length = super().__getlength__()
-        self.alphabet = super().__getalphabet__()
+#     def __init__(self, alphabet: str, values: Dict[str, List[int]]):
+#         super().__init__(alphabet=alphabet, values=values)
+#         self.length = super().__getlength__()
+#         self.alphabet = super().__getalphabet__()
 
-    def normalize(self, pseudocounts: int = 0):
-        counts: Dict[str, List[float]] = {}
-        pseudocounts = float(pseudocounts)
-        for letter in self.alphabet:
-            counts[letter] = [pseudocounts] * self.length
-        for i in range(self.length):
-            for letter in self.alphabet:
-                counts[letter][i] += self[letter][i]
-        return counts
+#     def normalize(self, pseudocounts: int = 0):
+#         counts: Dict[str, List[float]] = {}
+#         pseudocounts = float(pseudocounts)
+#         for letter in self.alphabet:
+#             counts[letter] = [pseudocounts] * self.length
+#         for i in range(self.length):
+#             for letter in self.alphabet:
+#                 counts[letter][i] += self[letter][i]
+#         return counts
     
-class PositionWeightMatrix(GenericPositionMatrix):
-    length: int
-    alphabet: str
+# class PositionWeightMatrix(GenericPositionMatrix):
+#     length: int
+#     alphabet: str
 
-    def __init__(self, alphabet: str, counts: Dict[str, List[float]]):
-        super().__init__(alphabet=alphabet, values=counts)
-        self.length = super().__getlength__()
-        self.alphabet = super().__getalphabet__()
+#     def __init__(self, alphabet: str, counts: Dict[str, List[float]]):
+#         super().__init__(alphabet=alphabet, values=counts)
+#         self.length = super().__getlength__()
+#         self.alphabet = super().__getalphabet__()
 
-        for i in range(self.length):
-            total = sum(self[letter][i] for letter in alphabet)
-            for letter in alphabet:
-                self[letter][i] /= total
+#         for i in range(self.length):
+#             total = sum(self[letter][i] for letter in alphabet)
+#             for letter in alphabet:
+#                 self[letter][i] /= total
     
-    def __init__(self, alphabet: str, counts: Dict[str, List[int]]):
-        super().__init__(alphabet=alphabet, values=counts)
-        self.length = super().__getlength__()
-        self.alphabet = super().__getalphabet__()
+#     def __init__(self, alphabet: str, counts: Dict[str, List[int]]):
+#         super().__init__(alphabet=alphabet, values=counts)
+#         self.length = super().__getlength__()
+#         self.alphabet = super().__getalphabet__()
 
-        for i in range(self.length):
-            total = sum(self[letter][i] for letter in alphabet)
-            for letter in alphabet:
-                self[letter][i] /= total
+#         for i in range(self.length):
+#             total = sum(self[letter][i] for letter in alphabet)
+#             for letter in alphabet:
+#                 self[letter][i] /= total
     
-    def log_odds(self, background: Optional[Dict[str, float]]=None):
-        values = {}
-        alphabet = self.alphabet
+#     def log_odds(self, background: Optional[Dict[str, float]]=None):
+#         values = {}
+#         alphabet = self.alphabet
 
-        if background is None:
-            background = dict.fromkeys(self.alphabet, 1.0)
-        else:
-            background = dict(background)
-        total = sum(background.values())
+#         if background is None:
+#             background = dict.fromkeys(self.alphabet, 1.0)
+#         else:
+#             background = dict(background)
+#         total = sum(background.values())
 
-        for letter in alphabet:
-            background[letter] /= total
-            values[letter] = []
-        for i in range(self.length):
-            for letter in alphabet:
-                b = background[letter]
+#         for letter in alphabet:
+#             background[letter] /= total
+#             values[letter] = []
+#         for i in range(self.length):
+#             for letter in alphabet:
+#                 b = background[letter]
 
-                if b > 0:
-                    p = self[letter][i]
-                    if p > 0:
-                        logodds = math.log(p / b, 2)
-                    else:
-                        logodds = -math.inf
-                else:
-                    p = self[letter][i]
-                    if p > 0:
-                        logodds = math.inf
-                    else:
-                        logodds = math.nan
-                values[letter].append(logodds)
-        pssm = PositionSpecificScoringMatrix(alphabet=alphabet, values=values)
-        return pssm
+#                 if b > 0:
+#                     p = self[letter][i]
+#                     if p > 0:
+#                         logodds = math.log(p / b, 2)
+#                     else:
+#                         logodds = -math.inf
+#                 else:
+#                     p = self[letter][i]
+#                     if p > 0:
+#                         logodds = math.inf
+#                     else:
+#                         logodds = math.nan
+#                 values[letter].append(logodds)
+#         pssm = PositionSpecificScoringMatrix(alphabet=alphabet, values=values)
+#         return pssm
     
-class PositionSpecificScoringMatrix(GenericPositionMatrix):
-    length: int
-    alphabet: str
+# class PositionSpecificScoringMatrix(GenericPositionMatrix):
+#     length: int
+#     alphabet: str
 
-    def __init__(self, alphabet: str, values=Dict[str, List[float]]):
-        super().__init__(alphabet=alphabet, values=values)
-        self.length = super().__getlength__()
-        self.alphabet = super().__getalphabet__()
+#     def __init__(self, alphabet: str, values=Dict[str, List[float]]):
+#         super().__init__(alphabet=alphabet, values=values)
+#         self.length = super().__getlength__()
+#         self.alphabet = super().__getalphabet__()
     
-    def __init__(self, alphabet: str, values=Dict[str, List[int]]):
-        super().__init__(alphabet=alphabet, values=values)
-        self.length = super().__getlength__()
-        self.alphabet = super().__getalphabet__()
+#     def __init__(self, alphabet: str, values=Dict[str, List[int]]):
+#         super().__init__(alphabet=alphabet, values=values)
+#         self.length = super().__getlength__()
+#         self.alphabet = super().__getalphabet__()
+
 
 
 values = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
@@ -349,6 +350,7 @@ print(positionMatrix)
 # print(positionMatrix.consensus)
 # print(positionMatrix.anticonsensus)
 # print(positionMatrix.gc_content)
+# TODO: degenerate_consensus causing issues?
 # print(positionMatrix.degenerate_consensus)
 # print(positionMatrix.calculate_consensus())
 
