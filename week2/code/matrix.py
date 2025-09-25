@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 from python import Bio.Seq as Seq
-from python import numbers
+# from python import numbers
 import math
 import numpy as np
 # from python import Bio.motifs._pwm as pwm
@@ -343,9 +343,9 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
         self.alphabet = super().__getalphabet__()
 
 
-# values = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
-# positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
-# print(positionMatrix['A'])
+values = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
+positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
+print(positionMatrix)
 # print(positionMatrix.consensus)
 # print(positionMatrix.anticonsensus)
 # print(positionMatrix.gc_content)
