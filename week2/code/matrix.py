@@ -3,6 +3,7 @@ from python import Bio.Seq as Seq
 import math
 import numpy as np
 import _pwm
+from python import numbers
 
 class GenericPositionMatrix:
     alphabet: str
@@ -47,24 +48,98 @@ class GenericPositionMatrix:
         text = "\n".join(lines) + "\n"
         return text
     
-#     # TODO: finish
     def __getitem__(self, key) -> List[float] | Dict[str, List[float]]:
-        if isinstance(key, str):
-            return self.data[key]
+        letter: str
+        letters: List[str]
 
+        if isinstance(key, tuple):
+            if len(key) == 2:
+                key1, key2 = key
+                if isinstance(key1, slice):
+                    start1, stop1, stride1 = key1.indices(len(self.alphabet))
+                    indices1 = range(start1, stop1, stride1)
+                    letters1 = [self.alphabet[i] for i in indices1]
+                    dim1 = 2
+                elif isinstance(key1, numbers.Integral):
+                    letter1 = self.alphabet[key1]
+                    dim1 = 1
+                elif isinstance(key1, tuple):
+                    letters1 = [self.alphabet[i] for i in key1]
+                    dim1 = 2
+                elif isinstance(key1, str):
+                    if len(key1) == 1:
+                        letter1 = key1
+                        dim1 = 1
+                    else:
+                        raise KeyError(key1)
+                else:
+                    raise KeyError(f"Cannot understand key {key1}")
+
+                if isinstance(key2, slice):
+                    start2, stop2, stride2 = key2.indices(self.length)
+                    indices2 = range(start2, stop2, stride2)
+                    dim2 = 2
+                elif isinstance(key2, numbers.Integral):
+                    index2 = key2
+                    dim2 = 1
+                else:
+                    raise KeyError(f"Cannot understand key {key2}")
+
+                if dim1 == 1 and dim2 == 1:
+                    return self.data[letter1][index2]
+                elif dim1 == 1 and dim2 == 2:
+                    values = self.data[letter1]
+                    return tuple(values[index2] for index2 in indices2)
+                elif dim1 == 2 and dim2 == 1:
+                    d = {}
+                    for letter1 in letters1:
+                        d[letter1] = self.data[letter1][index2]
+                    return d
+                else:
+                    d = {}
+                    for letter1 in letters1:
+                        values = self.data[letter1]
+                        d[letter1] = [values[_] for _ in indices2]
+                    if sorted(letters1) == self.alphabet:
+                        return self.__class__(self.alphabet, d)
+                    else:
+                        return d
+            elif len(key) == 1:
+                key = key[0]
+            else:
+                raise KeyError("keys should be 1- or 2-dimensional")
+
+        if isinstance(key, slice):
+            start, stop, stride = key.indices(len(self.alphabet))
+            indices = range(start, stop, stride)
+            letters = [self.alphabet[i] for i in indices]
+            dim = 2
+        elif isinstance(key, numbers.Integral):
+            letter = self.alphabet[key]
+            dim = 1
+        elif isinstance(key, tuple):
+            letters = [self.alphabet[i] for i in key]
+            dim = 2
+        elif isinstance(key, str):
+            if len(key) == 1:
+                letter = key
+                dim = 1
+            else:
+                raise KeyError(key)
         elif isinstance(key, int):
             return self.data[self.alphabet[key]]
-
-        # elif isinstance(key, slice):
-        #     start, stop, stride = key.indices(len(self.alphabet))
-        #     letters = [self.alphabet[i] for i in range(start, stop, stride)]
-        #     d: Dict[str, List[float]] = Dict[str, List[float]]()
-        #     for letter in letters:
-        #         d[letter] = Dict[str, List[float]].__getitem__(self, letter)
-        #     return d
-
         else:
             raise KeyError(f"Unsupported key type: {key}")
+        
+        if dim == 1:
+            return self.data[letter]
+        elif dim == 2:
+            d = {}
+            for letter in letters:
+                d[letter] = self.data[letter]
+            return d
+        else:
+            raise RuntimeError("Should not get here")
 
     @property
     def consensus(self):
@@ -362,14 +437,13 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
         return super().gc_content
 
 values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
-# positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
+positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
 # print(positionMatrix)
 # print(positionMatrix.consensus)
 # print(positionMatrix.anticonsensus)
 # print(positionMatrix.gc_content)
 # TODO: degenerate_consensus causing issues?
 # print(positionMatrix.degenerate_consensus)
-# print(positionMatrix.calculate_consensus())
 
 # rc = positionMatrix.reverse_complement()
 # print(rc)
