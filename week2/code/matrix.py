@@ -149,37 +149,6 @@ class GenericPositionMatrix:
         return Seq.Seq(sequence)
 
     def calculate_consensus(self, substitution_matrix=None, plurality=None, identity=0, setcase=None):
-        """Return the consensus sequence (as a string) for the given parameters.
-
-        This function largely follows the conventions of the EMBOSS `cons` tool.
-
-        Arguments:
-         - substitution_matrix - the scoring matrix used when comparing
-           sequences. By default, it is None, in which case we simply count the
-           frequency of each letter.
-           Instead of the default value, you can use the substitution matrices
-           available in Bio.Align.substitution_matrices. Common choices are
-           BLOSUM62 (also known as EBLOSUM62) for protein, and NUC.4.4 (also
-           known as EDNAFULL) for nucleotides. NOTE: This has not yet been
-           implemented.
-         - plurality           - threshold value for the number of positive
-           matches, divided by the total count in a column, required to reach
-           consensus. If substitution_matrix is None, then this argument must
-           be None, and is ignored; a ValueError is raised otherwise. If
-           substitution_matrix is not None, then the default value of the
-           plurality is 0.5.
-         - identity            - number of identities, divided by the total
-           count in a column, required to define a consensus value. If the
-           number of identities is less than identity * total count in a column,
-           then the undefined character ('N' for nucleotides and 'X' for amino
-           acid sequences) is used in the consensus sequence. If identity is
-           1.0, then only columns of identical letters contribute to the
-           consensus. Default value is zero.
-         - setcase             - threshold for the positive matches, divided by
-           the total count in a column, above which the consensus is in
-           upper-case and below which the consensus is in lower-case. By
-           default, this is equal to 0.5.
-        """
         alphabet = self.alphabet
         if set(alphabet).union(set("ACGTUN-")) == set("ACGTUN-"):
             undefined = "N"
@@ -354,7 +323,38 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
         )
         _pwm.calculate(sequence, logodds, scores)
         return scores
-        
+
+#   # TODO: this whole thing
+    # def search(self, sequence, threshold=0.0, both=True, chunksize=10**6):
+
+    @property
+    def max(self):
+        """Maximal possible score for this motif.
+
+        returns the score computed for the consensus sequence.
+        """
+        score = 0.0
+        letters = self.alphabet
+        for position in range(self.length):
+            score += max(self[letter][position] for letter in letters)
+        return score
+
+    @property
+    def min(self):
+        """Minimal possible score for this motif.
+
+        returns the score computed for the anticonsensus sequence.
+        """
+        score = 0.0
+        letters = self.alphabet
+        for position in range(self.length):
+            score += min(self[letter][position] for letter in letters)
+        return score
+
+    @property
+    def gc_content(self):
+        """Compute the GC-ratio."""
+        return super().gc_content
 
 values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
 # positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
@@ -381,3 +381,6 @@ values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], 
 positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
 print(positionSpecific)
 print(positionSpecific.calculate("CGTA"))
+# print(positionSpecific.max)
+# print(positionSpecific.min)
+# print(positionSpecific.gc_content)
