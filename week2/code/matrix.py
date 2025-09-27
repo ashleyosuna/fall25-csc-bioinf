@@ -1,10 +1,8 @@
 from typing import Dict, List, Optional
 from python import Bio.Seq as Seq
 import math
-# # from python import numbers
-# import math
-# import numpy as np
-# # from python import Bio.motifs._pwm as pwm
+import numpy as np
+import _pwm
 
 class GenericPositionMatrix:
     alphabet: str
@@ -341,11 +339,26 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
     def __init__(self, alphabet: str, values: Dict[str, List[float]]):
         super().__init__(alphabet=alphabet, values=values)
         self.alphabet = alphabet
-        self.length = super().__getlength__()
+        self.length = super().__getlength__()    
+    
+    def calculate(self, sequence: str):
+        if sorted(self.alphabet) != ['A', 'C', 'G', 'T']:
+            raise ValueError(f"PSSM has wrong alphabet: {self.alphabet} - Use only with DNA motifs")
+
+        n = len(sequence)
+        m = self.length
+
+        scores = np.empty(n - m + 1, np.float32)
+        logodds = np.array(
+            [[self[letter][i] for letter in "ACGT"] for i in range(m)], float
+        )
+        _pwm.calculate(sequence, logodds, scores)
+        return scores
+        
 
 values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
-positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
-print(positionMatrix)
+# positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
+# print(positionMatrix)
 # print(positionMatrix.consensus)
 # print(positionMatrix.anticonsensus)
 # print(positionMatrix.gc_content)
@@ -365,5 +378,6 @@ print(positionMatrix)
 # print(positionMatrix2)
 # print('logodds', positionMatrix2.log_odds())
 
-# positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
-# print(positionSpecific)
+positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
+print(positionSpecific)
+print(positionSpecific.calculate("CGTA"))
