@@ -228,6 +228,11 @@ class FrequencyPositionMatrix(GenericPositionMatrix):
         super().__init__(alphabet=alphabet, values=values)
         self.length = super().__getlength__()
         self.alphabet = super().__getalphabet__()
+    
+    def __init__(self, alphabet: str, values: Dict[str, List[float]]):
+        super().__init__(alphabet=alphabet, values=values)
+        self.length = super().__getlength__()
+        self.alphabet = super().__getalphabet__()
 
     def normalize(self, pseudocounts: int = 0):
         counts: Dict[str, List[float]] = {}
@@ -378,9 +383,9 @@ values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], 
 # print(positionMatrix2)
 # print('logodds', positionMatrix2.log_odds())
 
-positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
-print(positionSpecific)
-print(positionSpecific.calculate("CGTA"))
+# positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
+# print(positionSpecific)
+# print(positionSpecific.calculate("CGTA"))
 # print(positionSpecific.max)
 # print(positionSpecific.min)
 # print(positionSpecific.gc_content)
