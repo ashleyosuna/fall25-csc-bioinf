@@ -48,8 +48,7 @@ class GenericPositionMatrix:
         text = "\n".join(lines) + "\n"
         return text
 
-    # used only by mean
-    # created to bypass __getitem__
+    # bypass __getitem__ for numeric computations
     def get_value(self, letter: str, i: int) -> float:
         return self.data[letter][i]
     
@@ -92,7 +91,7 @@ class GenericPositionMatrix:
                     start2, stop2, stride2 = key2.indices(self.length)
                     indices2 = range(start2, stop2, stride2)
                     dim2 = 2
-                if isinstance(key2, numbers.Integral):
+                elif isinstance(key2, numbers.Integral):
                     index2 = key2
                     dim2 = 1
                 else:
@@ -124,37 +123,37 @@ class GenericPositionMatrix:
                 raise KeyError("keys should be 1- or 2-dimensional")
 
         # UNCOMMENT THIS
-        # if isinstance(key, slice):
-        #     start, stop, stride = key.indices(len(self.alphabet))
-        #     indices = range(start, stop, stride)
-        #     letters = [self.alphabet[i] for i in indices]
-        #     dim = 2
-        # elif isinstance(key, numbers.Integral):
-        #     letter = self.alphabet[key]
-        #     dim = 1
-        # elif isinstance(key, tuple):
-        #     letters = [self.alphabet[i] for i in key]
-        #     dim = 2
-        # elif isinstance(key, str):
-        #     if len(key) == 1:
-        #         letter = key
-        #         dim = 1
-        #     else:
-        #         raise KeyError(key)
-        # elif isinstance(key, int):
-        #     return self.data[self.alphabet[key]]
-        # else:
-        #     raise KeyError(f"Unsupported key type: {key}")
+        if isinstance(key, slice):
+            start, stop, stride = key.indices(len(self.alphabet))
+            indices = range(start, stop, stride)
+            letters = [self.alphabet[i] for i in indices]
+            dim = 2
+        elif isinstance(key, numbers.Integral):
+            letter = self.alphabet[key]
+            dim = 1
+        elif isinstance(key, tuple):
+            letters = [self.alphabet[i] for i in key]
+            dim = 2
+        elif isinstance(key, str):
+            if len(key) == 1:
+                letter = key
+                dim = 1
+            else:
+                raise KeyError(key)
+        elif isinstance(key, int):
+            return self.data[self.alphabet[key]]
+        else:
+            raise KeyError(f"Unsupported key type: {key}")
         
-        # if dim == 1:
-        #     return self.data[letter]
-        # elif dim == 2:
-        #     d = {}
-        #     for letter in letters:
-        #         d[letter] = self.data[letter]
-        #     return d
-        # else:
-        #     raise RuntimeError("Should not get here")
+        if dim == 1:
+            return self.data[letter]
+        elif dim == 2:
+            d = {}
+            for letter in letters:
+                d[letter] = self.data[letter]
+            return d
+        else:
+            raise RuntimeError("Should not get here")
 
     @property
     def consensus(self):
@@ -551,6 +550,19 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
         denominator = math.sqrt((sxx - sx * sx) * (syy - sy * sy))
         return numerator / denominator
 
+    def distribution(self, background: Optional[Dict[str,float]]=None, precision=10**3):
+        """Calculate the distribution of the scores at the given precision."""
+        from .thresholds import ScoreDistribution
+
+        if background is None:
+            background = dict.fromkeys(self.alphabet, 1.0)
+        else:
+            background = dict(background)
+        total = sum(background.values())
+        for letter in self.alphabet:
+            background[letter] /= total
+        return ScoreDistribution(precision=precision, pssm=self, background=background)
+
 values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
 positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
 # print(positionMatrix)
@@ -583,4 +595,4 @@ print(positionSpecific)
 # print(positionSpecific.mean())
 # print(positionSpecific.std())
 # print(positionSpecific.dist_pearson(positionSpecific2))
-# print(positionSpecific.distribution())
+# print(positionSpecific.distribution()) ## doesn't work yet

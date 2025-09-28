@@ -10,7 +10,7 @@ class ScoreDistribution:
     """
     min_score: float
     interval: float
-    n_points: float
+    n_points: int
     ic: float
     step: float
     mo_density: List[float]
@@ -52,8 +52,13 @@ class ScoreDistribution:
                 lo = pssm[:, position]
                 for letter, score in lo.items():
                     bg = background[letter]
-                    mo = pow(2, pssm[letter, position]) * bg
-                    d = self._index_diff(score)
+                    # mo = pow(2, pssm[letter, position]) * bg
+                    mo = pow(2, pssm.get_value(letter, position)) * bg
+
+                    numeric_score = pssm.get_value(letter, position)  # # use get_value for numeric access to the PSSM, always float
+                    # d = self._index_diff(score)
+                    d = self._index_diff(numeric_score)
+                    
                     for i in range(self.n_points):
                         mo_new[self._add(i, d)] += self.mo_density[i] * mo
                         bg_new[self._add(i, d)] += self.bg_density[i] * bg
