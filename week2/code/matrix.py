@@ -47,12 +47,25 @@ class GenericPositionMatrix:
             lines.append(line)
         text = "\n".join(lines) + "\n"
         return text
+
+    # used only by mean
+    # created to bypass __getitem__
+    def get_value(self, letter: str, i: int) -> float:
+        return self.data[letter][i]
     
     def __getitem__(self, key) -> List[float] | Dict[str, List[float]]:
         letter: str
         letters: List[str]
+        letter1: str
+        letters1: List[str]
+        str_key: str = ""
+        dim1: int
+        dim2: int
+        index2: int
+        indices2: tuple
 
         if isinstance(key, tuple):
+
             if len(key) == 2:
                 key1, key2 = key
                 if isinstance(key1, slice):
@@ -79,7 +92,7 @@ class GenericPositionMatrix:
                     start2, stop2, stride2 = key2.indices(self.length)
                     indices2 = range(start2, stop2, stride2)
                     dim2 = 2
-                elif isinstance(key2, numbers.Integral):
+                if isinstance(key2, numbers.Integral):
                     index2 = key2
                     dim2 = 1
                 else:
@@ -100,46 +113,48 @@ class GenericPositionMatrix:
                     for letter1 in letters1:
                         values = self.data[letter1]
                         d[letter1] = [values[_] for _ in indices2]
-                    if sorted(letters1) == self.alphabet:
+                    if sorted(letters1) == list(self.alphabet):
                         return self.__class__(self.alphabet, d)
                     else:
                         return d
-            elif len(key) == 1:
-                key = key[0]
+            # elif len(key) == 1:
+            #     str_key = key[0]
+            #     # key = key[0]
             else:
                 raise KeyError("keys should be 1- or 2-dimensional")
 
-        if isinstance(key, slice):
-            start, stop, stride = key.indices(len(self.alphabet))
-            indices = range(start, stop, stride)
-            letters = [self.alphabet[i] for i in indices]
-            dim = 2
-        elif isinstance(key, numbers.Integral):
-            letter = self.alphabet[key]
-            dim = 1
-        elif isinstance(key, tuple):
-            letters = [self.alphabet[i] for i in key]
-            dim = 2
-        elif isinstance(key, str):
-            if len(key) == 1:
-                letter = key
-                dim = 1
-            else:
-                raise KeyError(key)
-        elif isinstance(key, int):
-            return self.data[self.alphabet[key]]
-        else:
-            raise KeyError(f"Unsupported key type: {key}")
+        # UNCOMMENT THIS
+        # if isinstance(key, slice):
+        #     start, stop, stride = key.indices(len(self.alphabet))
+        #     indices = range(start, stop, stride)
+        #     letters = [self.alphabet[i] for i in indices]
+        #     dim = 2
+        # elif isinstance(key, numbers.Integral):
+        #     letter = self.alphabet[key]
+        #     dim = 1
+        # elif isinstance(key, tuple):
+        #     letters = [self.alphabet[i] for i in key]
+        #     dim = 2
+        # elif isinstance(key, str):
+        #     if len(key) == 1:
+        #         letter = key
+        #         dim = 1
+        #     else:
+        #         raise KeyError(key)
+        # elif isinstance(key, int):
+        #     return self.data[self.alphabet[key]]
+        # else:
+        #     raise KeyError(f"Unsupported key type: {key}")
         
-        if dim == 1:
-            return self.data[letter]
-        elif dim == 2:
-            d = {}
-            for letter in letters:
-                d[letter] = self.data[letter]
-            return d
-        else:
-            raise RuntimeError("Should not get here")
+        # if dim == 1:
+        #     return self.data[letter]
+        # elif dim == 2:
+        #     d = {}
+        #     for letter in letters:
+        #         d[letter] = self.data[letter]
+        #     return d
+        # else:
+        #     raise RuntimeError("Should not get here")
 
     @property
     def consensus(self):
@@ -436,6 +451,106 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
         """Compute the GC-ratio."""
         return super().gc_content
 
+    def mean(self, background: Optional[Dict[str, float]]=None):
+        """Return expected value of the score of a motif."""
+        logodds: float
+
+        if background is None:
+            background = dict.fromkeys(self.alphabet, 1.0)
+        else:
+            background = dict(background)
+        total = sum(background.values())
+        for letter in self.alphabet:
+            background[letter] /= total
+        sx = 0.0
+        for i in range(self.length):
+            for letter in self.alphabet:
+                logodds = self.get_value(letter, i) # created a fn specifically for this, maybe not ideal
+                if math.isnan(logodds):
+                    continue
+                if math.isinf(logodds) and logodds < 0:
+                    continue
+                b = background[letter]
+                p = b * math.pow(2, logodds)
+                sx += p * logodds
+        return sx
+
+    def std(self, background: Optional[Dict[str, float]]=None):
+        """Return standard deviation of the score of a motif."""
+        if background is None:
+            background = dict.fromkeys(self.alphabet, 1.0)
+        else:
+            background = dict(background)
+        total = sum(background.values())
+        for letter in self.alphabet:
+            background[letter] /= total
+        variance = 0.0
+        for i in range(self.length):
+            sx = 0.0
+            sxx = 0.0
+            for letter in self.alphabet:
+                logodds = self.get_value(letter, i)
+                if math.isnan(logodds):
+                    continue
+                if math.isinf(logodds) and logodds < 0:
+                    continue
+                b = background[letter]
+                p = b * math.pow(2, logodds)
+                sx += p * logodds
+                sxx += p * logodds * logodds
+            sxx -= sx * sx
+            variance += sxx
+        variance = max(variance, 0)  # to avoid roundoff problems
+        return math.sqrt(variance)
+
+    def dist_pearson(self, other):
+        """Return the similarity score based on pearson correlation for the given motif against self.
+
+        We use the Pearson's correlation of the respective probabilities.
+        """
+        if self.alphabet != other.alphabet:
+            raise ValueError("Cannot compare motifs with different alphabets")
+
+        max_p = -2.0
+        for offset in range(-self.length + 1, other.length):
+            if offset < 0:
+                p = self.dist_pearson_at(other, -offset)
+            else:  # offset>=0
+                p = other.dist_pearson_at(self, offset)
+            if max_p < p:
+                max_p = p
+                max_o = -offset
+        return 1 - max_p, max_o
+
+    def dist_pearson_at(self, other, offset):
+        """Return the similarity score based on pearson correlation at the given offset."""
+        letters = self.alphabet
+        sx = 0.0  # \sum x
+        sy = 0.0  # \sum y
+        sxx = 0.0  # \sum x^2
+        sxy = 0.0  # \sum x \cdot y
+        syy = 0.0  # \sum y^2
+        norm = max(self.length, offset + other.length) * len(letters)
+        for pos in range(min(self.length - offset, other.length)):
+            # xi = [self[letter, pos + offset] for letter in letters]
+            # yi = [other[letter, pos] for letter in letters]
+            xi = [self.get_value(letter, pos + offset) for letter in letters]
+            yi = [other.get_value(letter, pos) for letter in letters]
+
+            sx += sum(xi)
+            sy += sum(yi)
+            sxx += sum(x * x for x in xi)
+            sxy += sum(x * y for x, y in zip(xi, yi))
+            syy += sum(y * y for y in yi)
+        sx /= norm
+        sy /= norm
+        sxx /= norm
+        sxy /= norm
+        syy /= norm
+        numerator = sxy - sx * sy
+        denominator = math.sqrt((sxx - sx * sx) * (syy - sy * sy))
+        return numerator / denominator
+
 values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
 positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
 # print(positionMatrix)
@@ -457,9 +572,15 @@ positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
 # print(positionMatrix2)
 # print('logodds', positionMatrix2.log_odds())
 
-# positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
-# print(positionSpecific)
+positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
+values2: Dict[str, List[int]] = {"A": [2, 2, 2], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
+positionSpecific2 = PositionSpecificScoringMatrix(alphabet="ACGT", values=values2)
+print(positionSpecific)
 # print(positionSpecific.calculate("CGTA"))
 # print(positionSpecific.max)
 # print(positionSpecific.min)
 # print(positionSpecific.gc_content)
+# print(positionSpecific.mean())
+# print(positionSpecific.std())
+# print(positionSpecific.dist_pearson(positionSpecific2))
+# print(positionSpecific.distribution())
