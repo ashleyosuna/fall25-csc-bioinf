@@ -42,7 +42,11 @@ class GenericPositionMatrix:
         line = "   " + " ".join(words)
         lines = [line]
         for letter in self.alphabet:
-            words = [f"{val:6.2f}" for val in self.data[letter]]
+            words = [
+                f"{val:6.2f}" if not math.isinf(val) else f"{val:>6}" 
+                for val in self.data[letter]
+            ]
+
             line = f"{letter}: " + " ".join(words)
             lines.append(line)
         text = "\n".join(lines) + "\n"

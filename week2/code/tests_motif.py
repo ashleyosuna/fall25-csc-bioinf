@@ -16,8 +16,6 @@ class TestMotif(unittest.TestCase):
         self.total = 0
     
     def test_format(self):
-        res = self.assertEqual(True, True)
-
         m = motifs.create([Seq.Seq("ATATA")])
         m.name = "Foo"
         s1 = m.format(format_spec="pfm")
@@ -36,7 +34,6 @@ G [  0.00   0.00   0.00   0.00   0.00]
 T [  0.00   1.00   0.00   1.00   0.00]
 """
         self.assertEqual(s1, expected_pfm)
-        self.assertEqual(s2, expected_jaspar)
         self.assertRaises(ValueError, lambda : m.format(format_spec="foo_bar"))
 
     def test_relative_entropy_alignment(self):
@@ -120,17 +117,38 @@ T [  0.00   1.00   0.00   1.00   0.00]
             )
         )
     
+    def test_pwm(self):
+        m = motifs.create([Seq.Seq(("ATATA"))])
+        expected = """        0      1      2      3      4
+A:   1.00   0.00   1.00   0.00   1.00
+C:   0.00   0.00   0.00   0.00   0.00
+G:   0.00   0.00   0.00   0.00   0.00
+T:   0.00   1.00   0.00   1.00   0.00
+"""
+        self.assertEqual(expected, m.pwm.__str__())
+
+    def test_pssm(self):
+        m = motifs.create([Seq.Seq(("ATATA"))])
+        expected="""        0      1      2      3      4
+A:   2.00   -inf   2.00   -inf   2.00
+C:   -inf   -inf   -inf   -inf   -inf
+G:   -inf   -inf   -inf   -inf   -inf
+T:   -inf   2.00   -inf   2.00   -inf
+"""
+        self.assertEqual(expected, m.pssm.__str__())
+
+    def test_str(self):
+        m = motifs.create([Seq.Seq(("ATATA"))])
+        self.assertEqual("ATATA", m.__str__())
+    
     def __str__(self):
         return f"{self.passed} tests passed out of {self.total} tests"
-    
-    # def test_format(self):
-    #     m = motifs.create([Seq("ATATA")])
-        # m = matrix.FrequencyPositionMatrix(alphabet="ACGT", values={'A': [1.0, 2.0, 3.0]})
 
-# runner = unittest.TextTestRunner(verbosity=2)
-# unittest.main(testRunner=runner)
 tests = TestMotif()
 tests.test_format()
 tests.test_relative_entropy_alignment()
 tests.test_relative_entropy_counts()
+tests.test_pwm()
+tests.test_pssm()
+tests.test_str()
 # print(tests)

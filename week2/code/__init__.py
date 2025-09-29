@@ -15,13 +15,12 @@ class Motif:
     length: int
     alignment: Optional[pyobj]
     alphabet: str
-    _pseudocounts: Optional[Dict[str, float]]
-    # background: Optional[Dict[str, float]]
+    _pseudocounts: Dict[str, float]
     _background: Optional[Dict[str, float]]
 
     # mask: Optional[]
 
-    def __init__(self, alphabet="ACGT", alignment: Optional[pyobj]=None, counts: Optional[Dict[str, List[float]]]=None):
+    def __init__(self, alphabet="ACGT", alignment: Optional[pyobj] =None, counts: Optional[Dict[str, List[float]]]=None):
         self.name = ""
 
         if counts is not None and alignment is not None:
@@ -171,30 +170,32 @@ class Motif:
         return values
     
 
-    # @property
-    # def pwm(self):
-    #     """Calculate and return the position weight matrix for this motif."""
-    #     return self.counts.normalize(self._pseudocounts)
+    @property
+    def pwm(self):
+        """Calculate and return the position weight matrix for this motif."""
+        return self.counts.normalize(self._pseudocounts)
 
-    # @property
-    # def pssm(self):
-    #     """Calculate and return the position specific scoring matrix for this motif."""
-    #     return self.pwm.log_odds(self._background)
+    @property
+    def pssm(self):
+        """Calculate and return the position specific scoring matrix for this motif."""
+        return self.pwm.log_odds(self._background)
 
-    # def __str__(self, masked=False):
-    #     """Return string representation of a motif."""
-    #     text = ""
-    #     if self.alignment is not None:
-    #         text += "\n".join(self.alignment)
+    def __str__(self, masked=False):
+        """Return string representation of a motif."""
+        text = ""
+        if self.alignment is not None:
+            for m in self.alignment:
+                text += f"\n{m}"
+            text = text.lstrip()
 
-    #     if masked:
-    #         for i in range(self.length):
-    #             if self.__mask[i]:
-    #                 text += "*"
-    #             else:
-    #                 text += " "
-    #         text += "\n"
-    #     return text
+        # if masked:
+        #     for i in range(self.length):
+        #         if self.__mask[i]:
+        #             text += "*"
+        #         else:
+        #             text += " "
+        #     text += "\n"
+        return text
     
 # motif = Motif(counts={'A': [1.0, 2.0, 3.0], 'C': [2.0, 3.0, 4.0], 'G': [1.0, 2.0, 3.0], 'T': [2.0, 3.0, 4.0]})
 # print('-->', len(motif))
