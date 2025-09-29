@@ -323,15 +323,22 @@ class FrequencyPositionMatrix(GenericPositionMatrix):
         self.length = super().__getlength__()
         self.alphabet = super().__getalphabet__()
 
-    def normalize(self, pseudocounts: int = 0):
+    def normalize(self, pseudocounts = None):
         counts: Dict[str, List[float]] = {}
-        pseudocounts = float(pseudocounts)
-        for letter in self.alphabet:
-            counts[letter] = [pseudocounts] * self.length
+        if pseudocounts is None:
+            for letter in self.alphabet:
+                counts[letter] = [0.0] * self.length
+        elif isinstance(pseudocounts, dict[str, float]) or isinstance(pseudocounts, dict[str, int]):
+            for letter in self.alphabet:
+                counts[letter] = [float(pseudocounts[letter])] * self.length
+        else:
+            for letter in self.alphabet:
+                counts[letter] = [float(pseudocounts)] * self.length
         for i in range(self.length):
             for letter in self.alphabet:
                 counts[letter][i] += self[letter][i]
-        return PositionWeightMatrix(alphabet=self.alphabet, counts=counts)
+        # Actual normalization is done in the PositionWeightMatrix initializer
+        return PositionWeightMatrix(self.alphabet, counts=counts)
     
 class PositionWeightMatrix(GenericPositionMatrix):
     length: int
@@ -563,8 +570,8 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
             background[letter] /= total
         return ScoreDistribution(precision=precision, pssm=self, background=background)
 
-values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
-positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
+# values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
+# positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
 # print(positionMatrix)
 # print(positionMatrix.consensus)
 # print(positionMatrix.anticonsensus)
@@ -584,10 +591,10 @@ positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
 # print(positionMatrix2)
 # print('logodds', positionMatrix2.log_odds())
 
-positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
-values2: Dict[str, List[int]] = {"A": [2, 2, 2], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
-positionSpecific2 = PositionSpecificScoringMatrix(alphabet="ACGT", values=values2)
-print(positionSpecific)
+# positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
+# values2: Dict[str, List[int]] = {"A": [2, 2, 2], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
+# positionSpecific2 = PositionSpecificScoringMatrix(alphabet="ACGT", values=values2)
+# print(positionSpecific)
 # print(positionSpecific.calculate("CGTA"))
 # print(positionSpecific.max)
 # print(positionSpecific.min)
