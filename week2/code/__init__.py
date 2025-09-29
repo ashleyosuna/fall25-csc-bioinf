@@ -138,20 +138,22 @@ class Motif:
         counts = self.counts
         length = self.length
         values = np.zeros(length)
-        # if self.alignment is None:
-        #     total = []
-        #     # total = np.array(
-        #     #     [
-        #     #         sum(counts[c][i] + pseudocounts[c] for c in alphabet)
-        #     #         for i in range(length)
-        #     #     ]
-        #     # )
-        #     for letter, frequencies in counts.items():
-        #         frequencies = np.array(frequencies) + pseudocounts[letter]
-        #         mask = frequencies > 0
-        #         frequencies = frequencies[mask] / total[mask]
-        #         values[mask] += frequencies * np.log2(frequencies / background[letter])
-        if self.alignment is not None:
+        if self.alignment is None:
+            total = np.array(
+                [
+                    sum(counts[c][i] + pseudocounts[c] for c in alphabet)
+                    for i in range(length)
+                ]
+            )
+            for letter in alphabet:
+                frequencies = []
+                for i in range(length):
+                    frequencies.append(counts[letter][i])
+                frequencies = np.array(frequencies) + pseudocounts[letter]
+                mask = frequencies > 0
+                frequencies = frequencies[mask] / total[mask]
+                values[mask] += frequencies * np.log2(frequencies / background[letter])
+        else:
             total = np.zeros(length)
             for letter in alphabet:
                 frequencies = []
@@ -167,6 +169,32 @@ class Motif:
                 frequencies = frequencies[mask] / total[mask]
                 values[mask] += frequencies * np.log2(frequencies / background[letter])
         return values
+    
+
+    # @property
+    # def pwm(self):
+    #     """Calculate and return the position weight matrix for this motif."""
+    #     return self.counts.normalize(self._pseudocounts)
+
+    # @property
+    # def pssm(self):
+    #     """Calculate and return the position specific scoring matrix for this motif."""
+    #     return self.pwm.log_odds(self._background)
+
+    # def __str__(self, masked=False):
+    #     """Return string representation of a motif."""
+    #     text = ""
+    #     if self.alignment is not None:
+    #         text += "\n".join(self.alignment)
+
+    #     if masked:
+    #         for i in range(self.length):
+    #             if self.__mask[i]:
+    #                 text += "*"
+    #             else:
+    #                 text += " "
+    #         text += "\n"
+    #     return text
     
 # motif = Motif(counts={'A': [1.0, 2.0, 3.0], 'C': [2.0, 3.0, 4.0], 'G': [1.0, 2.0, 3.0], 'T': [2.0, 3.0, 4.0]})
 # print('-->', len(motif))

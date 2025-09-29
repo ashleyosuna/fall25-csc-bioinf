@@ -39,11 +39,7 @@ T [  0.00   1.00   0.00   1.00   0.00]
         self.assertEqual(s2, expected_jaspar)
         self.assertRaises(ValueError, lambda : m.format(format_spec="foo_bar"))
 
-        if not res:
-            self.passed += 1
-        self.total += 1
-
-    def test_relative_entropy(self):
+    def test_relative_entropy_alignment(self):
         m = motifs.create([Seq.Seq("ATATA"), Seq.Seq("ATCTA"), Seq.Seq("TTGTA")])
         self.assertEqual(len(m.alignment), 3)
         self.assertEqual(m.background, {"A": 0.25, "C": 0.25, "G": 0.25, "T": 0.25})
@@ -109,6 +105,21 @@ T [  0.00   1.00   0.00   1.00   0.00]
             )
         )
     
+    def test_relative_entropy_counts(self):
+        m = motifs.Motif(counts={'A': [1.0, 2.0, 3.0], 'C': [2.0, 3.0, 4.0], 'G': [1.0, 2.0, 3.0], 'T': [2.0, 3.0, 4.0]})
+        self.assertTrue(
+            np.allclose(
+                m.relative_entropy,
+                np.array(
+                    [
+                        0.08170417,
+                        0.02904941,
+                        0.01477186,
+                    ]
+                ),
+            )
+        )
+    
     def __str__(self):
         return f"{self.passed} tests passed out of {self.total} tests"
     
@@ -120,5 +131,6 @@ T [  0.00   1.00   0.00   1.00   0.00]
 # unittest.main(testRunner=runner)
 tests = TestMotif()
 tests.test_format()
-tests.test_relative_entropy()
-print(tests)
+tests.test_relative_entropy_alignment()
+tests.test_relative_entropy_counts()
+# print(tests)
