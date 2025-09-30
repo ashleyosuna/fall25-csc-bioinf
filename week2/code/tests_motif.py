@@ -1,14 +1,14 @@
 import math
 import unittest
 import numpy as np
-# import __init__ as motifs
-# from python import Bio.Seq as Seq
+import __init__ as motifs
+from python import Bio.Seq as Seq
 
-if __codon__:
-    import __init__ as motifs
-    from python import Bio.Seq as Seq
-else:
-    from Bio import motifs, Seq
+# if __codon__:
+#     import __init__ as motifs
+#     from python import Bio.Seq as Seq
+# else:
+#     from Bio import motifs, Seq
 
 class TestMotif(unittest.TestCase):
     def __init__(self):
