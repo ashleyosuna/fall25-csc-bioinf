@@ -191,6 +191,18 @@ T:   -inf   2.00   -inf   2.00   -inf
         m.background = background
         m.pseudocounts = pseudocounts
 
+        received_forward = m.format(format_spec="transfac")
+        expected_forward = """P0      A      C      G      T
+01      1      0      0      0      A
+02      0      0      0      1      T
+03      1      0      0      0      A
+04      0      0      0      1      T
+05      1      0      0      0      A
+XX
+//
+"""
+        self.assertEqual(received_forward, expected_forward)
+
         expected_forward_pwm = """        0      1      2      3      4
 A:   0.50   0.17   0.50   0.17   0.50
 C:   0.17   0.17   0.17   0.17   0.17
@@ -200,6 +212,18 @@ T:   0.17   0.50   0.17   0.50   0.17
         self.assertEqual(str(m.pwm), expected_forward_pwm)
         
         rc = m.reverse_complement()
+
+        received_reverse = rc.format(format_spec="transfac")
+        expected_reverse = """P0      A      C      G      T
+01      0      0      0      1      T
+02      1      0      0      0      A
+03      0      0      0      1      T
+04      1      0      0      0      A
+05      0      0      0      1      T
+XX
+//
+"""
+        self.assertEqual(received_reverse, expected_reverse)
 
         expected_reverse_pwm = """        0      1      2      3      4
 A:   0.17   0.50   0.17   0.50   0.17
@@ -252,12 +276,12 @@ U:   0.50   0.17   0.50   0.17   0.50
         m = motifs.Motif(counts=counts)
         m.background = background
         m.pseudocounts = pseudocounts
-        # received_forward = format(m, "transfac")
-        # self.assertEqual(received_forward, expected_forward)
+        received_forward = m.format(format_spec="transfac")
+        self.assertEqual(received_forward, expected_forward)
         self.assertEqual(str(m.pwm), expected_forward_pwm)
         m = m.reverse_complement()
-        # received_reverse = format(m, "transfac")
-        # self.assertEqual(received_reverse, expected_reverse)
+        received_reverse = m.format(format_spec="transfac")
+        self.assertEqual(received_reverse, expected_reverse)
         self.assertEqual(str(m.pwm), expected_reverse_pwm)
         # Same, but for RNA count matrix
         m_rna = motifs.create([Seq.Seq("AUAUA")], alphabet="ACGU")
