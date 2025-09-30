@@ -44,6 +44,22 @@ XX
 """
         self.assertEqual(s, expected_transfac)
 
+    def test_format_clusterbuster(self):
+        m = motifs.create([Seq.Seq("ATATA")])
+        m.name = "Foo"
+        s = m.format(format_spec="clusterbuster")
+
+        expected = """>Foo
+1	0	0	0
+0	0	0	1
+1	0	0	0
+0	0	0	1
+1	0	0	0
+"""
+
+        self.assertEqual(s, expected)
+
+
     def test_relative_entropy_alignment(self):
         m = motifs.create([Seq.Seq("ATATA"), Seq.Seq("ATCTA"), Seq.Seq("TTGTA")])
         self.assertEqual(len(m.alignment), 3)
@@ -346,18 +362,19 @@ def run_test(name, func):
     except AssertionError as e:
         print(f"{name} failed: {e}")
 
-# run_test("test_format", tests.test_format)
-# run_test("test_relative_entropy_alignment", tests.test_relative_entropy_alignment)
-# run_test("test_relative_entropy_counts", tests.test_relative_entropy_counts)
-# run_test("test_pwm", tests.test_pwm)
-# run_test("test_pssm", tests.test_pssm)
-# run_test("test_str", tests.test_str)
-# run_test("test_mask", tests.test_mask)
-# run_test("test_reverse_complement", tests.test_reverse_complement)
-# run_test("test_consensus", tests.test_consensus)
-# run_test("test_anticonsensus", tests.test_anticonsensus)
-# run_test("test_degenerate_consensus", tests.test_degenerate_consensus)
-# run_test("test_degenerate_consensus_with_ties", tests.test_degenerate_consensus_with_ties)
-# run_test("test_degenerate_consensus_rna", tests.test_degenerate_consensus_rna)
-# run_test("test_getitem", tests.test_getitem)
+run_test("test_format", tests.test_format)
+run_test("test_relative_entropy_alignment", tests.test_relative_entropy_alignment)
+run_test("test_relative_entropy_counts", tests.test_relative_entropy_counts)
+run_test("test_pwm", tests.test_pwm)
+run_test("test_pssm", tests.test_pssm)
+run_test("test_str", tests.test_str)
+run_test("test_mask", tests.test_mask)
+run_test("test_reverse_complement", tests.test_reverse_complement)
+run_test("test_consensus", tests.test_consensus)
+run_test("test_anticonsensus", tests.test_anticonsensus)
+run_test("test_degenerate_consensus", tests.test_degenerate_consensus)
+run_test("test_degenerate_consensus_with_ties", tests.test_degenerate_consensus_with_ties)
+run_test("test_degenerate_consensus_rna", tests.test_degenerate_consensus_rna)
+run_test("test_getitem", tests.test_getitem)
 run_test("test_format_transfac", tests.test_format_transfac)
+run_test("test_format_transfac", tests.test_format_clusterbuster)

@@ -91,12 +91,9 @@ class Motif:
         elif format_spec == "transfac":
             motifs = [self]
             return utilities.transac_write(motifs)
-        # elif format_spec == "clusterbuster":
-        #     # from Bio.motifs import clusterbuster
-        #     from python import Bio.motifs.clustebuster as clusterbuster
-
-        #     motifs = [self]
-        #     return clusterbuster.write(motifs, **kwargs)
+        elif format_spec == "clusterbuster":
+            motifs = [self]
+            return utilities.clusterbuster_write(motifs, **kwargs)
         elif format_spec == "default":
             # Follow python convention and default to using __str__
             return str(self)
