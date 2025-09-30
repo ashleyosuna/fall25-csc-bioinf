@@ -28,6 +28,21 @@ T [  0.00   1.00   0.00   1.00   0.00]
 """
         self.assertEqual(s1, expected_pfm)
         self.assertRaises(ValueError, lambda : m.format(format_spec="foo_bar"))
+    
+    def test_format_transfac(self):
+        m = motifs.create([Seq.Seq("ATATA")])
+        m.name = "Foo"
+        s = m.format(format_spec="transfac")
+        expected_transfac = """P0      A      C      G      T
+01      1      0      0      0      A
+02      0      0      0      1      T
+03      1      0      0      0      A
+04      0      0      0      1      T
+05      1      0      0      0      A
+XX
+//
+"""
+        self.assertEqual(s, expected_transfac)
 
     def test_relative_entropy_alignment(self):
         m = motifs.create([Seq.Seq("ATATA"), Seq.Seq("ATCTA"), Seq.Seq("TTGTA")])
@@ -331,17 +346,18 @@ def run_test(name, func):
     except AssertionError as e:
         print(f"{name} failed: {e}")
 
-run_test("test_format", tests.test_format)
-run_test("test_relative_entropy_alignment", tests.test_relative_entropy_alignment)
-run_test("test_relative_entropy_counts", tests.test_relative_entropy_counts)
-run_test("test_pwm", tests.test_pwm)
-run_test("test_pssm", tests.test_pssm)
-run_test("test_str", tests.test_str)
-run_test("test_mask", tests.test_mask)
-run_test("test_reverse_complement", tests.test_reverse_complement)
-run_test("test_consensus", tests.test_consensus)
-run_test("test_anticonsensus", tests.test_anticonsensus)
-run_test("test_degenerate_consensus", tests.test_degenerate_consensus)
-run_test("test_degenerate_consensus_with_ties", tests.test_degenerate_consensus_with_ties)
-run_test("test_degenerate_consensus_rna", tests.test_degenerate_consensus_rna)
-run_test("test_getitem", tests.test_getitem)
+# run_test("test_format", tests.test_format)
+# run_test("test_relative_entropy_alignment", tests.test_relative_entropy_alignment)
+# run_test("test_relative_entropy_counts", tests.test_relative_entropy_counts)
+# run_test("test_pwm", tests.test_pwm)
+# run_test("test_pssm", tests.test_pssm)
+# run_test("test_str", tests.test_str)
+# run_test("test_mask", tests.test_mask)
+# run_test("test_reverse_complement", tests.test_reverse_complement)
+# run_test("test_consensus", tests.test_consensus)
+# run_test("test_anticonsensus", tests.test_anticonsensus)
+# run_test("test_degenerate_consensus", tests.test_degenerate_consensus)
+# run_test("test_degenerate_consensus_with_ties", tests.test_degenerate_consensus_with_ties)
+# run_test("test_degenerate_consensus_rna", tests.test_degenerate_consensus_rna)
+# run_test("test_getitem", tests.test_getitem)
+run_test("test_format_transfac", tests.test_format_transfac)

@@ -88,12 +88,9 @@ class Motif:
         if format_spec in ["pfm", "jaspar"]:
             motifs = [self]
             return utilities.jaspar_write(motifs, format_spec)
-        # elif format_spec == "transfac":
-        #     # from Bio.motifs import transfac
-        #     from python import Bio.motifs.transfac as transfac
-
-        #     motifs = [self]
-        #     return transfac.write(motifs)
+        elif format_spec == "transfac":
+            motifs = [self]
+            return utilities.transac_write(motifs)
         # elif format_spec == "clusterbuster":
         #     # from Bio.motifs import clusterbuster
         #     from python import Bio.motifs.clustebuster as clusterbuster
