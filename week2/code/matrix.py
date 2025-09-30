@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from python import Bio.Seq as Seq
 import math
 import numpy as np
@@ -52,112 +52,63 @@ class GenericPositionMatrix:
         text = "\n".join(lines) + "\n"
         return text
 
-    # bypass __getitem__ for numeric computations
+    # Bypass __getitem__ for numeric computations
+    # Always returns a float
     def get_value(self, letter: str, i: int) -> float:
         return self.data[letter][i]
-    
-    def __getitem__(self, key) -> List[float] | Dict[str, List[float]]:
-        letter: str
-        letters: List[str]
-        letter1: str
-        letters1: List[str]
-        str_key: str = ""
-        dim1: int
-        dim2: int
-        index2: int
-        indices2: tuple
 
-        if isinstance(key, tuple):
+    # Always returns a list of floats
+    def get_column(self, i: int) -> List[float]:
+        return [self.data[letter][i] for letter in self.alphabet]
 
-            if len(key) == 2:
-                key1, key2 = key
-                if isinstance(key1, slice):
-                    start1, stop1, stride1 = key1.indices(len(self.alphabet))
-                    indices1 = range(start1, stop1, stride1)
-                    letters1 = [self.alphabet[i] for i in indices1]
-                    dim1 = 2
-                elif isinstance(key1, numbers.Integral):
-                    letter1 = self.alphabet[key1]
-                    dim1 = 1
-                elif isinstance(key1, tuple):
-                    letters1 = [self.alphabet[i] for i in key1]
-                    dim1 = 2
-                elif isinstance(key1, str):
-                    if len(key1) == 1:
-                        letter1 = key1
-                        dim1 = 1
-                    else:
-                        raise KeyError(key1)
-                else:
-                    raise KeyError(f"Cannot understand key {key1}")
+    # Always returns a dict mapping letters -> float
+    def get_column_dict(self, i: int, letters: str) -> Dict[str, float]:
+        return {letter: self.data[letter][i] for letter in letters}
 
-                if isinstance(key2, slice):
-                    start2, stop2, stride2 = key2.indices(self.length)
-                    indices2 = range(start2, stop2, stride2)
-                    dim2 = 2
-                elif isinstance(key2, numbers.Integral):
-                    index2 = key2
-                    dim2 = 1
-                else:
-                    raise KeyError(f"Cannot understand key {key2}")
+    # Always returns a dict mapping letters -> list of floats
+    def get_rows(self, indices: List[int], letters: List[str]) -> Dict[str, List[float]]:
+        return {letter: [self.data[letter][j] for j in indices] for letter in letters}
 
-                if dim1 == 1 and dim2 == 1:
-                    return self.data[letter1][index2]
-                elif dim1 == 1 and dim2 == 2:
-                    values = self.data[letter1]
-                    return tuple(values[index2] for index2 in indices2)
-                elif dim1 == 2 and dim2 == 1:
-                    d = {}
-                    for letter1 in letters1:
-                        d[letter1] = self.data[letter1][index2]
-                    return d
-                else:
-                    d = {}
-                    for letter1 in letters1:
-                        values = self.data[letter1]
-                        d[letter1] = [values[_] for _ in indices2]
-                    if sorted(letters1) == list(self.alphabet):
-                        return self.__class__(self.alphabet, d)
-                    else:
-                        return d
-            # elif len(key) == 1:
-            #     str_key = key[0]
-            #     # key = key[0]
+    def __getitem__(self, key):
+        if isinstance(key, tuple) and len(key) == 2:
+            key1, key2 = key
+
+            # First dimension
+            if isinstance(key1, slice):
+                indices1 = range(*key1.indices(len(self.alphabet)))
+                letters1 = [self.alphabet[i] for i in indices1]
+            elif isinstance(key1, int):
+                letters1 = [self.alphabet[key1]]
+            elif isinstance(key1, str) and len(key1) == 1:
+                letters1 = [key1]
             else:
-                raise KeyError("keys should be 1- or 2-dimensional")
+                raise KeyError(f"Cannot understand first key {key1}")
 
-        # UNCOMMENT THIS
-        if isinstance(key, slice):
-            start, stop, stride = key.indices(len(self.alphabet))
-            indices = range(start, stop, stride)
-            letters = [self.alphabet[i] for i in indices]
-            dim = 2
-        elif isinstance(key, numbers.Integral):
-            letter = self.alphabet[key]
-            dim = 1
-        elif isinstance(key, tuple):
-            letters = [self.alphabet[i] for i in key]
-            dim = 2
-        elif isinstance(key, str):
-            if len(key) == 1:
-                letter = key
-                dim = 1
+            # Second dimension
+            if isinstance(key2, slice):
+                indices2 = range(*key2.indices(self.length))
+                return self.get_rows(list(indices2), letters1)
+            elif isinstance(key2, int):
+                if len(letters1) == 1:
+                    return self.get_value(letters1[0], key2)
+                else:
+                    return self.get_column_dict(key2, letters1)
             else:
-                raise KeyError(key)
+                raise KeyError(f"Cannot understand second key {key2}")
+
+        # Single-dimension keys
         elif isinstance(key, int):
             return self.data[self.alphabet[key]]
+        elif isinstance(key, str) and len(key) == 1:
+            return self.data[key]
+        elif isinstance(key, slice):
+            indices = range(*key.indices(len(self.alphabet)))
+            letters = [self.alphabet[i] for i in indices]
+            return {letter: self.data[letter] for letter in letters}
         else:
             raise KeyError(f"Unsupported key type: {key}")
-        
-        if dim == 1:
-            return self.data[letter]
-        elif dim == 2:
-            d = {}
-            for letter in letters:
-                d[letter] = self.data[letter]
-            return d
-        else:
-            raise RuntimeError("Should not get here")
+
+
 
     @property
     def consensus(self):
@@ -574,7 +525,7 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
             background[letter] /= total
         return ScoreDistribution(precision=precision, pssm=self, background=background)
 
-# values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
+values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
 # positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
 # print(positionMatrix)
 # print(positionMatrix.consensus)
@@ -606,4 +557,4 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
 # print(positionSpecific.mean())
 # print(positionSpecific.std())
 # print(positionSpecific.dist_pearson(positionSpecific2))
-# print(positionSpecific.distribution()) ## doesn't work yet
+# print(positionSpecific.distribution()) # might be working?
