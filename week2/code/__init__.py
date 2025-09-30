@@ -323,5 +323,31 @@ class Motif:
         }
         return res
     
-# motif = Motif(counts={'A': [1.0, 2.0, 3.0], 'C': [2.0, 3.0, 4.0], 'G': [1.0, 2.0, 3.0], 'T': [2.0, 3.0, 4.0]})
-# print('-->', len(motif))
+    def __getitem__(self, key):
+        raise TypeError("motif indices must be slices")
+    
+    def __getitem__(self, key: slice):
+        alphabet = self.alphabet
+        if self.alignment is None:
+            alignment = None
+            if self.counts is None:
+                counts = None
+            else:
+                temp = {letter: self.counts[letter][key] for letter in alphabet}
+                if not isinstance(temp, Dict[str, List[float]]): raise TypeError()
+                else: counts = temp
+        else:
+            alignment = self.alignment[:, key]
+            counts = None
+        motif = Motif(alphabet=alphabet, alignment=alignment, counts=counts)
+        motif.mask = self.mask[key]
+        if alignment is None and counts is None:
+            try:
+                length = self.length
+            except AttributeError:
+                pass
+            else:
+                motif.length = len(range(*key.indices(length)))
+        motif.pseudocounts = self.pseudocounts.copy()
+        motif.background = self.background.copy()
+        return motif

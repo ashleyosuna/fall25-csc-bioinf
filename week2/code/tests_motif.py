@@ -5,13 +5,8 @@ import __init__ as motifs
 import numpy as np
 
 class TestMotif(unittest.TestCase):
-    passed: int
-    total: int
-
     def __init__(self):
         super().__init__()
-        self.passed = 0
-        self.total = 0
     
     def test_format(self):
         m = motifs.create([Seq.Seq("ATATA")])
@@ -311,26 +306,22 @@ U:   0.50   0.17   0.50   0.17   0.50
         expected_degenerate_consensus = "AUVUA"
         self.assertEqual(str(m_rna.degenerate_consensus), expected_degenerate_consensus)
 
-    
-    def __str__(self):
-        return f"{self.passed} tests passed out of {self.total} tests"
+    def test_getitem(self):
+        m = motifs.create(["AACGCCA", "ACCGCCC", "AACTCCG"])
+        expected="""AACGCC\nACCGCC\nAACTCC"""
+        self.assertEqual(str(m[:-1]), expected)
+
+        expected=""
+        self.assertEqual(str(m[0:0]), expected)
+
+        expected="A\nA\nA"
+        self.assertEqual(str(m[0:1]), expected)
+        
+        # EXCEPTIONS
+        self.assertRaises(TypeError, lambda: m[0])
+        self.assertRaises(TypeError, lambda: m['A'])
 
 tests = TestMotif()
-# tests.test_format()
-# tests.test_relative_entropy_alignment()
-# tests.test_relative_entropy_counts()
-# tests.test_pwm()
-# tests.test_pssm()
-# tests.test_str()
-# tests.test_mask()
-# tests.test_reverse_complement()
-# tests.test_consensus()
-# tests.test_anticonsensus()
-# tests.test_degenerate_consensus()
-# tests.test_degenerate_consensus_with_ties()
-# tests.test_degenerate_consensus_rna()
-
-# print(tests)
 
 # shitty test runner
 def run_test(name, func):
@@ -353,3 +344,4 @@ run_test("test_anticonsensus", tests.test_anticonsensus)
 run_test("test_degenerate_consensus", tests.test_degenerate_consensus)
 run_test("test_degenerate_consensus_with_ties", tests.test_degenerate_consensus_with_ties)
 run_test("test_degenerate_consensus_rna", tests.test_degenerate_consensus_rna)
+run_test("test_getitem", tests.test_getitem)
