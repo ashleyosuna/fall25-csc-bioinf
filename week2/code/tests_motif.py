@@ -221,7 +221,30 @@ U:   0.50   0.17   0.50   0.17   0.50
 """
         self.assertEqual(str(m_rna.reverse_complement().pwm), expected_reverse_rna_pwm)
 
-        # TODO: test with counts
+        m = motifs.create([Seq.Seq("ATATA")])
+        counts = m.counts
+        m = motifs.Motif(counts=counts)
+        m.background = background
+        m.pseudocounts = pseudocounts
+        # received_forward = format(m, "transfac")
+        # self.assertEqual(received_forward, expected_forward)
+        self.assertEqual(str(m.pwm), expected_forward_pwm)
+        m = m.reverse_complement()
+        # received_reverse = format(m, "transfac")
+        # self.assertEqual(received_reverse, expected_reverse)
+        self.assertEqual(str(m.pwm), expected_reverse_pwm)
+        # Same, but for RNA count matrix
+        m_rna = motifs.create([Seq.Seq("AUAUA")], alphabet="ACGU")
+        counts = m_rna.counts
+        m_rna = motifs.Motif(counts=counts, alphabet="ACGU")
+        m_rna.background = background_rna
+        m_rna.pseudocounts = pseudocounts
+        self.assertEqual(str(m_rna.counts), expected_forward_rna_counts)
+        self.assertEqual(str(m_rna.pwm), expected_forward_rna_pwm)
+        self.assertEqual(
+            str(m_rna.reverse_complement().counts), expected_reverse_rna_counts
+        )
+        self.assertEqual(str(m_rna.reverse_complement().pwm), expected_reverse_rna_pwm)
 
     @test
     def test_consensus(self):
