@@ -365,7 +365,7 @@ U:   0.50   0.17   0.50   0.17   0.50
         expected="""AACGCC\nACCGCC\nAACTCC"""
         self.assertEqual(str(m[:-1]), expected)
 
-        expected=""
+        expected="\n\n"
         self.assertEqual(str(m[0:0]), expected)
 
         expected="A\nA\nA"

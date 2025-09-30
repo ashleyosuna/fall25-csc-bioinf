@@ -309,9 +309,11 @@ class Motif:
         """Return string representation of a motif."""
         text = ""
         if self.alignment is not None:
+            i = 0
             for m in self.alignment:
-                text += f"\n{m}"
-            text = text.lstrip()
+                if i != 0: text += '\n'
+                text += m
+                i += 1
 
         if masked:
             for i in range(self.length):
