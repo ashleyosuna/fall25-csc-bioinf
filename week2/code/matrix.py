@@ -263,6 +263,20 @@ class GenericPositionMatrix:
     
     def __getdata__(self):
         return self.data
+
+    def calculate(self, sequence: str):
+        if sorted(self.alphabet) != ['A', 'C', 'G', 'T']:
+            raise ValueError(f"PSSM has wrong alphabet: {self.alphabet} - Use only with DNA motifs")
+
+        n = len(sequence)
+        m = self.length
+
+        scores = np.empty(n - m + 1, np.float32)
+        logodds = np.array(
+            [[self[letter][i] for letter in "ACGT"] for i in range(m)], float
+        )
+        _pwm.calculate(sequence, logodds, scores)
+        return scores
     
 class FrequencyPositionMatrix(GenericPositionMatrix):
     alphabet: str
@@ -380,8 +394,38 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
         _pwm.calculate(sequence, logodds, scores)
         return scores
 
-#   # TODO: this whole thing
-    # def search(self, sequence, threshold=0.0, both=True, chunksize=10**6):
+    def search(self, sequence: str, threshold: float=0.0, both: bool=True, chunksize: int=10**6):
+        """Find hits with PWM score above given threshold.
+
+        A generator function, returning found hits in the given sequence
+        with the pwm score higher than the threshold.
+        """
+        sequence = sequence.upper()
+        seq_len = len(sequence)
+        motif_l = self.length
+        chunk_starts = np.arange(0, seq_len, chunksize)
+        if both:
+            rc = self.reverse_complement()
+        for chunk_start in chunk_starts:
+            subseq = sequence[chunk_start : chunk_start + chunksize + motif_l - 1]
+            pos_scores = self.calculate(subseq)
+            pos_ind = pos_scores >= threshold
+            pos_positions = np.where(pos_ind)[0] + chunk_start
+            pos_scores = pos_scores[pos_ind]
+            if both:
+                neg_scores = rc.calculate(subseq)
+                neg_ind = neg_scores >= threshold
+                neg_positions = np.where(neg_ind)[0] + chunk_start
+                neg_scores = neg_scores[neg_ind]
+            else:
+                neg_positions = np.empty((0), dtype=int)
+                neg_scores = np.empty((0), dtype=np.float32)
+            chunk_positions = np.append(pos_positions, neg_positions - seq_len)
+            chunk_scores = np.append(pos_scores, neg_scores)
+            order = np.argsort(np.append(pos_positions, neg_positions))
+            chunk_positions = chunk_positions[order]
+            chunk_scores = chunk_scores[order]
+            yield from zip(chunk_positions, chunk_scores)
 
     @property
     def max(self):
@@ -525,7 +569,7 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
             background[letter] /= total
         return ScoreDistribution(precision=precision, pssm=self, background=background)
 
-values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
+# values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
 # positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
 # print(positionMatrix)
 # print(positionMatrix.consensus)
@@ -558,3 +602,6 @@ values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], 
 # print(positionSpecific.std())
 # print(positionSpecific.dist_pearson(positionSpecific2))
 # print(positionSpecific.distribution()) # might be working?
+# print(positionSpecific.search(sequence=seq))
+# for pos, score in positionSpecific.search(sequence="ACGT"):
+#     print(pos, score)
