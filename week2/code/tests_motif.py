@@ -1,7 +1,5 @@
 import math
-# import unittest
 from python import Bio.Seq as Seq
-# import __init__ as motifs
 import unittest
 import __init__ as motifs
 import numpy as np
@@ -223,19 +221,63 @@ U:   0.50   0.17   0.50   0.17   0.50
 """
         self.assertEqual(str(m_rna.reverse_complement().pwm), expected_reverse_rna_pwm)
 
-
         # TODO: test with counts
+
+    def test_consensus(self):
+        m = motifs.create([
+            Seq.Seq("ATATA"),
+            Seq.Seq("ATCTA"),
+            Seq.Seq("TTGTA"),
+            Seq.Seq("ATATA"),
+        ])
+
+        expected_consensus = "ATATA"
+        self.assertEqual(str(m.consensus), expected_consensus)
+
+    def test_anticonsensus(self):
+        m = motifs.create([
+            Seq.Seq("ATCGA"),
+            Seq.Seq("ATCGA"),
+            Seq.Seq("GGGTG"),
+            Seq.Seq("GGGTG"),
+            Seq.Seq("CCACC"),
+            Seq.Seq("CCACC"),
+            Seq.Seq("TATAT")
+        ])
+
+        expected_anticonsensus = "TATAT"
+        self.assertEqual(str(m.anticonsensus), expected_anticonsensus)
+
+    def test_degenerate_consensus(self):
+        m = motifs.create([
+            Seq.Seq("ATATA"),
+            Seq.Seq("ATCTA"),
+            Seq.Seq("TTGTA"),
+            Seq.Seq("ATGTA")
+        ])
+        # Position-wise breakdown:
+        # 1: A (3), T (1) → A
+        # 2: T (4) → T
+        # 3: A (1), C (1), G (2) → V (A/C/G)
+        # 4: T (4) → T
+        # 5: A (4) → A
+
+        expected_degenerate_consensus = "ATVTA"
+        self.assertEqual(str(m.degenerate_consensus), expected_degenerate_consensus)
     
     def __str__(self):
         return f"{self.passed} tests passed out of {self.total} tests"
 
 tests = TestMotif()
-tests.test_format()
-tests.test_relative_entropy_alignment()
-tests.test_relative_entropy_counts()
-tests.test_pwm()
-tests.test_pssm()
-tests.test_str()
-tests.test_mask()
-tests.test_reverse_complement()
-# print(tests)
+# tests.test_format()
+# tests.test_relative_entropy_alignment()
+# tests.test_relative_entropy_counts()
+# tests.test_pwm()
+# tests.test_pssm()
+# tests.test_str()
+# tests.test_mask()
+# tests.test_reverse_complement()
+# tests.test_consensus()
+# tests.test_anticonsensus()
+# tests.test_degenerate_consensus()
+print(tests)
