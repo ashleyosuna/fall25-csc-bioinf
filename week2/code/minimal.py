@@ -16,15 +16,14 @@ def read(handle: File):
         length, num_occurrences, evalue = _read_motif_statistics(handle)
         counts = _read_lpm(record, handle, length, num_occurrences)
 
-        # TODO
-        # motif = motifs.Motif(alphabet=record.alphabet, counts=counts)
-        # motif.background = record.background
-        # motif.length = motif.counts.length
-        # motif.num_occurrences = num_occurrences
-        # motif.evalue = evalue
-        # motif.name = name
-        # record.append(motif)
-        # assert len(record) == motif_number
+        motif = motifs.Motif(alphabet=record.alphabet, counts=counts)
+        motif.background = record.background
+        motif.length = motif.counts.length
+        motif.num_occurrences = num_occurrences
+        motif.evalue = evalue
+        motif.name = name
+        record.append(motif)
+        assert len(record) == motif_number
     return record
 
 class Record():
