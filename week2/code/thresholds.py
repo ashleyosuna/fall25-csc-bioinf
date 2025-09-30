@@ -49,16 +49,19 @@ class ScoreDistribution:
             for position in range(pssm.length):
                 mo_new = [0.0] * self.n_points
                 bg_new = [0.0] * self.n_points
-                lo = pssm[:, position]
+                # lo = pssm[:, position]
+                lo = pssm.get_column_dict(position, pssm.alphabet)
+
                 for letter, score in lo.items():
                     bg = background[letter]
                     # mo = pow(2, pssm[letter, position]) * bg
                     mo = pow(2, pssm.get_value(letter, position)) * bg
 
                     numeric_score = pssm.get_value(letter, position)  # # use get_value for numeric access to the PSSM, always float
-                    # d = self._index_diff(score)
                     d = self._index_diff(numeric_score)
-                    
+                    # d = 1
+                    # d = self._index_diff(score)
+
                     for i in range(self.n_points):
                         mo_new[self._add(i, d)] += self.mo_density[i] * mo
                         bg_new[self._add(i, d)] += self.bg_density[i] * bg
