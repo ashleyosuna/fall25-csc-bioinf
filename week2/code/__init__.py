@@ -229,6 +229,68 @@ class Motif:
     @mask.setter
     def mask(self, mask = None):
         self.__set_mask(mask)
+
+    @property
+    def consensus(self):
+        """Return the consensus sequence."""
+        return self.counts.consensus
+
+    @property
+    def anticonsensus(self):
+        """Return the least probable pattern to be generated from this motif."""
+        return self.counts.anticonsensus
+
+    @property
+    def degenerate_consensus(self):
+        """Return the degenerate consensus sequence.
+
+        Following the rules adapted from
+        D. R. Cavener: "Comparison of the consensus sequence flanking
+        translational start sites in Drosophila and vertebrates."
+        Nucleic Acids Research 15(4): 1353-1361. (1987).
+
+        The same rules are used by TRANSFAC.
+        """
+        return self.counts.degenerate_consensus
+
+    def reverse_complement(self):
+        """Return the reverse complement of the motif as a new motif."""
+        alphabet = self.alphabet
+        if not self._has_dna_alphabet() and not self._has_rna_alphabet():
+            raise ValueError(
+                "Calculating reverse complement only works for DNA and RNA motifs"
+            )
+        T_or_U = "T" if self._has_dna_alphabet() else "U"
+        if self.alignment is not None:
+            alignment = self.alignment.reverse_complement()
+            sequences = alignment.sequences
+            if T_or_U == "U":
+                seqs = []
+                for s in sequences: seqs.append(s.replace("T", "U"))
+                res = Motif(alphabet=alphabet, alignment=Align.Alignment(sequences=seqs))
+            else: res = Motif(alphabet=alphabet, alignment=alignment)
+        else:  # has counts
+            counts = {
+                "A": self.counts[T_or_U][::-1],
+                "C": self.counts["G"][::-1],
+                "G": self.counts["C"][::-1],
+                T_or_U: self.counts["A"][::-1],
+            }
+            res = Motif(alphabet=alphabet, counts=counts)
+        res._mask = self._mask[::-1]
+        res.background = {
+            "A": self.background[T_or_U],
+            "C": self.background["G"],
+            "G": self.background["C"],
+            T_or_U: self.background["A"],
+        }
+        res.pseudocounts = {
+            "A": self.pseudocounts[T_or_U],
+            "C": self.pseudocounts["G"],
+            "G": self.pseudocounts["C"],
+            T_or_U: self.pseudocounts["A"],
+        }
+        return res
     
 # motif = Motif(counts={'A': [1.0, 2.0, 3.0], 'C': [2.0, 3.0, 4.0], 'G': [1.0, 2.0, 3.0], 'T': [2.0, 3.0, 4.0]})
 # print('-->', len(motif))
