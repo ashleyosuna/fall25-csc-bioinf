@@ -323,6 +323,8 @@ class Motif:
         }
         return res
     
+    # Catch all calls to getitem where key is not a slice;
+    # avoid compile-time errors
     def __getitem__(self, key):
         raise TypeError("motif indices must be slices")
     
