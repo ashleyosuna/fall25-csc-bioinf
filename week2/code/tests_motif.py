@@ -264,6 +264,28 @@ U:   0.50   0.17   0.50   0.17   0.50
 
         expected_degenerate_consensus = "ATVTA"
         self.assertEqual(str(m.degenerate_consensus), expected_degenerate_consensus)
+
+    def test_degenerate_consensus_with_ties(self):
+        m = motifs.create([
+            Seq.Seq("A"),
+            Seq.Seq("C"),
+            Seq.Seq("G"),
+            Seq.Seq("T"),
+        ])
+        expected_degenerate_consensus = "N"  # all bases equally represented
+        self.assertEqual(str(m.degenerate_consensus), expected_degenerate_consensus)
+
+    def test_degenerate_consensus_rna(self):
+        m_rna = motifs.create([
+            Seq.Seq("AUAUA"),
+            Seq.Seq("AUCUA"),
+            Seq.Seq("UUGUA"),
+            Seq.Seq("AUGUA")
+        ], alphabet="ACGU")
+
+        expected_degenerate_consensus = "AUVUA"
+        self.assertEqual(str(m_rna.degenerate_consensus), expected_degenerate_consensus)
+
     
     def __str__(self):
         return f"{self.passed} tests passed out of {self.total} tests"
@@ -280,4 +302,7 @@ tests = TestMotif()
 # tests.test_consensus()
 # tests.test_anticonsensus()
 # tests.test_degenerate_consensus()
-print(tests)
+# tests.test_degenerate_consensus_with_ties()
+# tests.test_degenerate_consensus_rna()
+
+# print(tests)
