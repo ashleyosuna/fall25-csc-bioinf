@@ -4,12 +4,6 @@ import numpy as np
 import __init__ as motifs
 from python import Bio.Seq as Seq
 
-# if __codon__:
-#     import __init__ as motifs
-#     from python import Bio.Seq as Seq
-# else:
-#     from Bio import motifs, Seq
-
 class TestMotif(unittest.TestCase):
     def __init__(self):
         super().__init__()
@@ -33,6 +27,7 @@ G [  0.00   0.00   0.00   0.00   0.00]
 T [  0.00   1.00   0.00   1.00   0.00]
 """
         self.assertEqual(s1, expected_pfm)
+        self.assertEqual(s2, expected_jaspar)
         self.assertRaises(ValueError, lambda : m.format(format_spec="foo_bar"))
     
     def test_format_transfac(self):
