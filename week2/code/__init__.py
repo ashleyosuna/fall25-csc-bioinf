@@ -1,13 +1,113 @@
 from python import Bio.Align as Align
 import numpy as np
 import matrix
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List
 from python import Bio.Seq as Seq
+from python import urllib.parse as parse
+from python import urllib.request as request
+# from urllib.request import Request
+# from urllib.request import urlopen
+# from python import Bio as Bio
 import utilities
 
 def create(instances, alphabet="ACGT"):
     alignment = Align.Alignment(instances)
     return Motif(alphabet=alphabet, alignment=alignment)
+
+# def parse(handle, fmt, strict=True):
+#     """Parse an output file from a motif finding program.
+
+#     Currently supported formats (case is ignored):
+#      - AlignAce:         AlignAce output file format
+#      - ClusterBuster:    Cluster Buster position frequency matrix format
+#      - XMS:              XMS matrix format
+#      - MEME:             MEME output file motif
+#      - MINIMAL:          MINIMAL MEME output file motif
+#      - MAST:             MAST output file motif
+#      - TRANSFAC:         TRANSFAC database file format
+#      - pfm-four-columns: Generic position-frequency matrix format with four columns. (CIS-BP, HOMER, HOCOMOCO, Neph, Tiffin)
+#      - pfm-four-rows:    Generic position-frequency matrix format with four row. (ScerTF, YeTFaSCo, hDPI, iDMMPMM, FlyFactorSurvey, Cys2His2 Zinc Finger Proteins PWM Predictor)
+#      - pfm:              JASPAR-style position-frequency matrix
+#      - jaspar:           JASPAR-style multiple PFM format
+#      - sites:            JASPAR-style sites file
+
+#     As files in the pfm and sites formats contain only a single motif,
+#     it is easier to use Bio.motifs.read() instead of Bio.motifs.parse()
+#     for those.
+
+#     For example:
+
+#     >>> from Bio import motifs
+#     >>> with open("motifs/alignace.out") as handle:
+#     ...     for m in motifs.parse(handle, "AlignAce"):
+#     ...         print(m.consensus)
+#     ...
+#     TCTACGATTGAG
+#     CTGCACCTAGCTACGAGTGAG
+#     GTGCCCTAAGCATACTAGGCG
+#     GCCACTAGCAGAGCAGGGGGC
+#     CGACTCAGAGGTT
+#     CCACGCTAAGAGAAGTGCCGGAG
+#     GCACGTCCCTGAGCA
+#     GTCCATCGCAAAGCGTGGGGC
+#     GAGATCAGAGGGCCG
+#     TGGACGCGGGG
+#     GACCAGAGCCTCGCATGGGGG
+#     AGCGCGCGTG
+#     GCCGGTTGCTGTTCATTAGG
+#     ACCGACGGCAGCTAAAAGGG
+#     GACGCCGGGGAT
+#     CGACTCGCGCTTACAAGG
+
+#     If strict is True (default), the parser will raise a ValueError if the
+#     file contents does not strictly comply with the specified file format.
+#     """
+#     fmt = fmt.lower()
+#     # if fmt == "alignace":
+#     #     # from Bio.motifs import alignace
+#     #     # from python import Bio.motifs.alignace as alignace
+#     #     import alignace
+
+#     #     return alignace.read(handle)
+#     # elif fmt == "meme":
+#     #     # from Bio.motifs import meme
+#     #     from python import Bio.motfis.meme as meme
+
+#     #     return meme.read(handle)
+#     # elif fmt == "minimal":
+#     #     import minimal
+#     #     return minimal.read(handle)
+#     # elif fmt == "clusterbuster":
+#     #     from python import Bio.motifs.clusterbuster as clusterbuster
+
+#     #     return clusterbuster.read(handle)
+#     # elif fmt in ("pfm-four-columns", "pfm-four-rows"):
+#     #     # from Bio.motifs import pfm
+#     #     from python import Bio.motifs.pfm as pfm
+
+#     #     return pfm.read(handle, fmt)
+#     # elif fmt == "xms":
+#     #     # from Bio.motifs import xms
+#     #     from python import Bio.motfis.xms
+
+#     #     return xms.read(handle)
+#     # elif fmt == "mast":
+#     #     # from Bio.motifs import mast
+#     #     from python import Bio.motifs.mast as mast
+
+#     #     return mast.read(handle)
+#     if fmt == "transfac":
+#         # from Bio.motifs import transfac
+#         # from python import Bio.motifs.transfac as transfac
+#         import transfac
+#         return transfac.read(handle, strict)
+#     # elif fmt in ("pfm", "sites", "jaspar"):
+#     #     # from Bio.motifs import jaspar
+#     #     from python import Bio.motifs.jaspar as jaspar
+
+#     #     return jaspar.read(handle, fmt)
+#     else:
+#         raise ValueError(f"Unknown format {fmt}")
 
 class Motif:
     name: str
@@ -347,3 +447,106 @@ class Motif:
         motif.pseudocounts = self.pseudocounts.copy()
         motif.background = self.background.copy()
         return motif
+    
+    def weblogo(self, fname, fmt="PNG", **kwds):
+        """Download and save a weblogo using the Berkeley weblogo service.
+
+        Requires an internet connection.
+
+        The parameters from ``**kwds`` are passed directly to the weblogo server.
+
+        Currently, this method uses WebLogo version 3.3.
+        These are the arguments and their default values passed to
+        WebLogo 3.3; see their website at http://weblogo.threeplusone.com
+        for more information::
+
+            'stack_width' : 'medium',
+            'stacks_per_line' : '40',
+            'alphabet' : 'alphabet_dna',
+            'ignore_lower_case' : True,
+            'unit_name' : "bits",
+            'first_index' : '1',
+            'logo_start' : '1',
+            'logo_end': str(self.length),
+            'composition' : "comp_auto",
+            'percentCG' : '',
+            'scale_width' : True,
+            'show_errorbars' : True,
+            'logo_title' : '',
+            'logo_label' : '',
+            'show_xaxis': True,
+            'xaxis_label': '',
+            'show_yaxis': True,
+            'yaxis_label': '',
+            'yaxis_scale': 'auto',
+            'yaxis_tic_interval' : '1.0',
+            'show_ends' : True,
+            'show_fineprint' : True,
+            'color_scheme': 'color_auto',
+            'symbols0': '',
+            'symbols1': '',
+            'symbols2': '',
+            'symbols3': '',
+            'symbols4': '',
+            'color0': '',
+            'color1': '',
+            'color2': '',
+            'color3': '',
+            'color4': '',
+
+        """
+        if set(self.alphabet) == set("ACDEFGHIKLMNPQRSTVWY"):
+            alpha = "alphabet_protein"
+        elif set(self.alphabet) == set("ACGU"):
+            alpha = "alphabet_rna"
+        elif set(self.alphabet) == set("ACGT"):
+            alpha = "alphabet_dna"
+        else:
+            alpha = "auto"
+
+        frequencies = self.format("transfac")
+        url = "https://weblogo.threeplusone.com/create.cgi"
+        values = {
+            "sequences": frequencies,
+            "format": fmt.lower(),
+            "stack_width": "medium",
+            "stacks_per_line": "40",
+            "alphabet": alpha,
+            "ignore_lower_case": str(True),
+            "unit_name": "bits",
+            "first_index": "1",
+            "logo_start": "1",
+            "logo_end": str(self.length),
+            "composition": "comp_auto",
+            "percentCG": "",
+            "scale_width": str(True),
+            "show_errorbars": str(True),
+            "logo_title": "",
+            "logo_label": "",
+            "show_xaxis": str(True),
+            "xaxis_label": "",
+            "show_yaxis": str(True),
+            "yaxis_label": "",
+            "yaxis_scale": "auto",
+            "yaxis_tic_interval": "1.0",
+            "show_ends": str(True),
+            "show_fineprint": str(True),
+            "color_scheme": "color_auto",
+            "symbols0": "",
+            "symbols1": "",
+            "symbols2": "",
+            "symbols3": "",
+            "symbols4": "",
+            "color0": "",
+            "color1": "",
+            "color2": "",
+            "color3": "",
+            "color4": "",
+        }
+        # values.update({k: "" if v is False else str(v) for k, v in kwds._asdict().items()})
+        data = parse.urlencode(values).encode("utf-8")
+        req = request.Request(url, data)
+        response = request.urlopen(req)
+        with open(fname, "wb") as f:
+            im = response.read()
+            f.write(im)
