@@ -1,5 +1,6 @@
 from matrix import FrequencyPositionMatrix
 
+######### JASPAR FORMAT #########
 def jaspar_write(motifs, format):
     """Return the representation of motifs in "pfm" or "jaspar" format."""
     letters = "ACGT"
@@ -34,6 +35,8 @@ def jaspar_write(motifs, format):
     # Finished; glue the lines together
     text = "".join(lines)
     return text
+
+######### TRANSAC FORMAT #########
 
 MULTIPLE_VALUE_KEYS = {"BF", "OV", "HP", "BS", "HC", "DT", "DR", "CC"}
 REFERENCE_KEYS = {"RX", "RA", "RT", "RL"}
@@ -72,22 +75,6 @@ def transac_write(motifs):
                         line = " ".join([f"{i+1:0>2}"] + [f"{m.counts[_][i]:6.20g}" for _ in letters]) + f"      {sequence[i]}"
                         lines.append(line)
                     blank = True
-                # else:
-                #     print('in else')
-                #     value = m[key]
-                #     # try:
-                #     #     value = m.get(key)
-                #     # except AttributeError:
-                #     #     value = None
-                #     if value is not None:
-                #         if key in MULTIPLE_VALUE_KEYS:
-                #             for v in value:
-                #                 line = f"{key}  {v}"
-                #                 lines.append(line)
-                #         else:
-                #             line = f"{key}  {value}"
-                #             lines.append(line)
-                #         blank = True
             if blank:
                 line = "XX"
                 lines.append(line)
@@ -96,4 +83,27 @@ def transac_write(motifs):
         block = "\n".join(lines) + "\n"
         blocks.append(block)
     text = "".join(blocks)
+    return text
+
+######### CLUSTERBUSTER FORMAT #########
+def clusterbuster_write(motifs, precision = 0):
+    """Return the representation of motifs in Cluster Buster position frequency matrix format.
+
+    By default (`precision=0`) Cluster Buster position frequency matrices will be written
+    with integer values.
+    If a higher precision value is set, Cluster Buster position frequency matrices will be
+    written as floats with `x` decimal places.
+    """
+    lines = []
+    for m in motifs:
+        lines.append(f">{m.name}\n")
+        for ACGT_counts in zip(
+            m.counts["A"], m.counts["C"], m.counts["G"], m.counts["T"]
+        ):
+            line = "\t".join([f"{round(val, precision)}" for val in ACGT_counts]) + "\n"
+            lines.append(line)
+
+    # Finished; glue the lines together.
+    text = "".join(lines)
+
     return text
