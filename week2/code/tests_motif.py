@@ -223,6 +223,7 @@ U:   0.50   0.17   0.50   0.17   0.50
 
         # TODO: test with counts
 
+    @test
     def test_consensus(self):
         m = motifs.create([
             Seq.Seq("ATATA"),
@@ -234,6 +235,7 @@ U:   0.50   0.17   0.50   0.17   0.50
         expected_consensus = "ATATA"
         self.assertEqual(str(m.consensus), expected_consensus)
 
+    @test
     def test_anticonsensus(self):
         m = motifs.create([
             Seq.Seq("ATCGA"),
@@ -306,3 +308,25 @@ tests = TestMotif()
 # tests.test_degenerate_consensus_rna()
 
 # print(tests)
+
+# shitty test runner
+def run_test(name, func):
+    try:
+        func()
+        print(f"{name} passed.")
+    except AssertionError as e:
+        print(f"{name} failed: {e}")
+
+run_test("test_format", tests.test_format)
+run_test("test_relative_entropy_alignment", tests.test_relative_entropy_alignment)
+run_test("test_relative_entropy_counts", tests.test_relative_entropy_counts)
+run_test("test_pwm", tests.test_pwm)
+run_test("test_pssm", tests.test_pssm)
+run_test("test_str", tests.test_str)
+run_test("test_mask", tests.test_mask)
+run_test("test_reverse_complement", tests.test_reverse_complement)
+run_test("test_consensus", tests.test_consensus)
+run_test("test_anticonsensus", tests.test_anticonsensus)
+run_test("test_degenerate_consensus", tests.test_degenerate_consensus)
+run_test("test_degenerate_consensus_with_ties", tests.test_degenerate_consensus_with_ties)
+run_test("test_degenerate_consensus_rna", tests.test_degenerate_consensus_rna)
