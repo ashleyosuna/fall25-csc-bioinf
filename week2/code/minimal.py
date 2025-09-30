@@ -1,3 +1,6 @@
+import __init__ as motifs
+from typing import List, Dict, Optional
+
 def read(handle: File):
     motif_number = 0
     record = Record()
@@ -19,8 +22,8 @@ def read(handle: File):
         motif = motifs.Motif(alphabet=record.alphabet, counts=counts)
         motif.background = record.background
         motif.length = motif.counts.length
-        motif.num_occurrences = num_occurrences
-        motif.evalue = evalue
+        # motif.num_occurrences = num_occurrences
+        # motif.evalue = evalue
         motif.name = name
         record.append(motif)
         assert len(record) == motif_number
@@ -31,26 +34,35 @@ class Record():
     datafile: str
     command: str
     alphabet: Optional[str]
-    background: dict[str, float]
+    background: Dict[str, float]
     # sequences: list
+    data: List[motifs.Motif]
 
     def __init__(self):
-        # super().__init__()
         self.version = ""
         self.datafile = ""
         self.command = ""
         self.alphabet = None
         self.background = {}
         # self.sequences = []
+        self.data = List[motifs.Motif]()
+
+    def append(self, item: motifs.Motif):
+        self.data.append(item)
+
+    def __len__(self):
+        return len(self.data)
     
-    # def __getitem__(self, key: str | int):
-        # if isinstance(key, str):
-        #     for motif in self:
-        #         if motif.name == key:
-        #             return motif
-        # else:
-        #     return list.__getitem__(self, key)
-        # return list.__getitem__(self, key)
+    def __iter__(self):
+        return self.data.__iter__()
+    
+    def __getitem__(self, key):
+        if isinstance(key, str):
+            for motif in self.data:
+                if motif.name == key:
+                    return motif
+        else:
+            return self.data.__getitem__(key)
 
 def _read_version(record: Record, handle):
     for line in handle:
@@ -122,3 +134,15 @@ def _read_lpm(record, handle, length, num_occurrences):
             break
     c = dict(zip(record.alphabet, counts))
     return c
+
+# with open("week2/tests/meme.out") as f:
+#     record = read(f)
+#     for motif in record:
+#         print(motif.name, str(motif))
+
+# with open("week2/tests/minimal_test.meme") as f:
+#     record = read(f)
+#     motif: motifs.Motif = record[0]
+#     print(motif.name)
+#     motif = record['IFXA']
+#     print(motif.name)
