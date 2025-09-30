@@ -575,13 +575,9 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
 # print(positionMatrix.consensus)
 # print(positionMatrix.anticonsensus)
 # print(positionMatrix.gc_content)
-# TODO: degenerate_consensus causing issues?
 # print(positionMatrix.degenerate_consensus)
+# print(positionMatrix.reverse_complement())
 
-# rc = positionMatrix.reverse_complement()
-# print(rc)
-
-# TODO: fix whatever the hell is wrong here
 # freqMatrix = FrequencyPositionMatrix(alphabet="ACGT", values={"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]})
 # print(freqMatrix)
 # print(freqMatrix.normalize(pseudocounts=1))
