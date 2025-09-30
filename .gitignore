@@ -3,3 +3,4 @@ __pycache__/
 contig*.fasta
 *.json
 week1/tests/*.txt
+.DS_Store
