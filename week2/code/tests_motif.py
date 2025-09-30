@@ -1,8 +1,14 @@
 import math
-from python import Bio.Seq as Seq
 import unittest
-import __init__ as motifs
 import numpy as np
+import __init__ as motifs
+from python import Bio.Seq as Seq
+
+# if __codon__:
+#     import __init__ as motifs
+#     from python import Bio.Seq as Seq
+# else:
+#     from Bio import motifs, Seq
 
 class TestMotif(unittest.TestCase):
     def __init__(self):
@@ -296,7 +302,6 @@ U:   0.50   0.17   0.50   0.17   0.50
         )
         self.assertEqual(str(m_rna.reverse_complement().pwm), expected_reverse_rna_pwm)
 
-    @test
     def test_consensus(self):
         m = motifs.create([
             Seq.Seq("ATATA"),
@@ -308,7 +313,6 @@ U:   0.50   0.17   0.50   0.17   0.50
         expected_consensus = "ATATA"
         self.assertEqual(str(m.consensus), expected_consensus)
 
-    @test
     def test_anticonsensus(self):
         m = motifs.create([
             Seq.Seq("ATCGA"),
