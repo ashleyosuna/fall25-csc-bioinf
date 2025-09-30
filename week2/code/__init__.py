@@ -50,6 +50,37 @@ class Motif:
         self._mask = None
         self.__set_mask(None)
     
+    def __init__(self, alphabet="ACGT", alignment: Optional[pyobj] =None, counts: Optional[matrix.FrequencyPositionMatrix]=None):
+        self.name = ""
+
+        if counts is not None and alignment is not None:
+            raise ValueError("Specify either counts or an alignment, don't specify both")
+        elif counts is not None:
+            self.alignment = None
+            self.counts = counts
+            self.length = self.counts.length
+        elif alignment is not None:
+            length = alignment.length
+            frequencies: Dict[str, List[float]] = {}
+            for letter in alphabet:
+                if letter not in list(alignment.frequencies.keys()):
+                    frequencies[letter] = [0.0 for _ in range(length)]
+                else:
+                    frequencies[letter] = [float(alignment.frequencies[letter][i]) for i in range(length)]
+            self.counts = matrix.FrequencyPositionMatrix(alphabet, frequencies)
+            self.alignment = alignment
+            self.length = length
+        else:
+            self.counts = None
+            self.alignment = None
+            self.length = 0
+        self.alphabet = alphabet
+        self._pseudocounts = dict.fromkeys(self.alphabet, 0.0)
+        self._background = None
+        self.__set_background(value=None)
+        self._mask = None
+        self.__set_mask(None)
+    
     def __len__(self):
         return 0 if self.length is None else self.length
     
