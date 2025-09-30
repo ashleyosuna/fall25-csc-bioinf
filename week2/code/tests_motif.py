@@ -405,4 +405,4 @@ run_test("test_degenerate_consensus_with_ties", tests.test_degenerate_consensus_
 run_test("test_degenerate_consensus_rna", tests.test_degenerate_consensus_rna)
 run_test("test_getitem", tests.test_getitem)
 run_test("test_format_transfac", tests.test_format_transfac)
-run_test("test_format_transfac", tests.test_format_clusterbuster)
+run_test("test_format_clusterbuster", tests.test_format_clusterbuster)
