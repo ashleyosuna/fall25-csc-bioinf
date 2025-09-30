@@ -1,7 +1,7 @@
 from python import Bio.Align as Align
 import numpy as np
 import matrix
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 from python import Bio.Seq as Seq
 import utilities
 
@@ -17,8 +17,7 @@ class Motif:
     alphabet: str
     _pseudocounts: Dict[str, float]
     _background: Optional[Dict[str, float]]
-
-    # mask: Optional[]
+    _mask: Optional[List[int]]
 
     def __init__(self, alphabet="ACGT", alignment: Optional[pyobj] =None, counts: Optional[Dict[str, List[float]]]=None):
         self.name = ""
@@ -48,7 +47,8 @@ class Motif:
         self._pseudocounts = dict.fromkeys(self.alphabet, 0.0)
         self._background = None
         self.__set_background(value=None)
-        # self.mask = None
+        self._mask = None
+        self.__set_mask(None)
     
     def __len__(self):
         return 0 if self.length is None else self.length
@@ -188,14 +188,47 @@ class Motif:
                 text += f"\n{m}"
             text = text.lstrip()
 
-        # if masked:
-        #     for i in range(self.length):
-        #         if self.__mask[i]:
-        #             text += "*"
-        #         else:
-        #             text += " "
-        #     text += "\n"
+        if masked:
+            for i in range(self.length):
+                if self._mask[i]:
+                    text += "*"
+                else:
+                    text += " "
+            text += "\n"
         return text
+    
+    @property
+    def mask(self):
+        return self._mask
+    
+    def __set_mask(self, mask = None):
+        if self.length is None or self.length == 0:
+            #  TODO:
+            self._mask = []
+        if mask is None:
+            self._mask = [1 for _ in range(self.length)]
+        elif len(mask) != self.length:
+            raise ValueError(
+                f"The length ({len(mask)}) of the mask is inconsistent with the length ({self.length}) of the motif"
+            )
+        elif isinstance(mask, str):
+            _mask = []
+            for char in mask:
+                if char == "*":
+                    _mask.append(1)
+                elif char == " ":
+                    _mask.append(0)
+                else:
+                    raise ValueError(
+                        f"Mask should contain only '*' or ' ' and not a '{char}'"
+                    )
+            self._mask = _mask
+        else:
+            self._mask = [int(bool(c)) for c in mask]
+    
+    @mask.setter
+    def mask(self, mask = None):
+        self.__set_mask(mask)
     
 # motif = Motif(counts={'A': [1.0, 2.0, 3.0], 'C': [2.0, 3.0, 4.0], 'G': [1.0, 2.0, 3.0], 'T': [2.0, 3.0, 4.0]})
 # print('-->', len(motif))

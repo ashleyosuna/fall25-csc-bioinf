@@ -140,6 +140,25 @@ T:   -inf   2.00   -inf   2.00   -inf
     def test_str(self):
         m = motifs.create([Seq.Seq(("ATATA"))])
         self.assertEqual("ATATA", m.__str__())
+
+        m.mask = "* * *"
+        self.assertEqual('ATATA* * *\n', m.__str__(masked=True))
+
+    def test_mask(self):
+        m = motifs.create([Seq.Seq(("ATATA"))])
+        self.assertEqual([1] * m.length, m.mask)
+
+        m.mask = "* * *"
+        self.assertEqual([1, 0, 1, 0, 1], m.mask)
+
+        m.mask = [2, 0, 3, 0, 1]
+        self.assertEqual([1, 0, 1, 0, 1], m.mask)
+
+        def exception(): m.mask = "abcab"
+        self.assertRaises(ValueError, exception)
+
+        def exception(): m.mask = [1,2]
+        self.assertRaises(ValueError, exception)
     
     def __str__(self):
         return f"{self.passed} tests passed out of {self.total} tests"
@@ -151,4 +170,5 @@ tests.test_relative_entropy_counts()
 tests.test_pwm()
 tests.test_pssm()
 tests.test_str()
+tests.test_mask()
 # print(tests)
