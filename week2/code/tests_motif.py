@@ -159,6 +159,72 @@ T:   -inf   2.00   -inf   2.00   -inf
 
         def exception(): m.mask = [1,2]
         self.assertRaises(ValueError, exception)
+
+    def test_reverse_complement(self):
+        background = {"A": 0.3, "C": 0.2, "G": 0.2, "T": 0.3}
+        pseudocounts = 0.5
+        m = motifs.create([Seq.Seq(("ATATA"))])
+        m.background = background
+        m.pseudocounts = pseudocounts
+
+        expected_forward_pwm = """        0      1      2      3      4
+A:   0.50   0.17   0.50   0.17   0.50
+C:   0.17   0.17   0.17   0.17   0.17
+G:   0.17   0.17   0.17   0.17   0.17
+T:   0.17   0.50   0.17   0.50   0.17
+"""
+        self.assertEqual(str(m.pwm), expected_forward_pwm)
+        
+        rc = m.reverse_complement()
+
+        expected_reverse_pwm = """        0      1      2      3      4
+A:   0.17   0.50   0.17   0.50   0.17
+C:   0.17   0.17   0.17   0.17   0.17
+G:   0.17   0.17   0.17   0.17   0.17
+T:   0.50   0.17   0.50   0.17   0.50
+"""
+        self.assertEqual(expected_reverse_pwm, str(rc.pwm))
+
+
+        background_rna = {"A": 0.3, "C": 0.2, "G": 0.2, "U": 0.3}
+        pseudocounts = 0.5
+        m_rna = motifs.create([Seq.Seq("AUAUA")], alphabet="ACGU")
+        m_rna.background = background_rna
+        m_rna.pseudocounts = pseudocounts
+        expected_forward_rna_counts = """        0      1      2      3      4
+A:   1.00   0.00   1.00   0.00   1.00
+C:   0.00   0.00   0.00   0.00   0.00
+G:   0.00   0.00   0.00   0.00   0.00
+U:   0.00   1.00   0.00   1.00   0.00
+"""
+        self.assertEqual(str(m_rna.counts), expected_forward_rna_counts)
+        
+        expected_forward_rna_pwm = """        0      1      2      3      4
+A:   0.50   0.17   0.50   0.17   0.50
+C:   0.17   0.17   0.17   0.17   0.17
+G:   0.17   0.17   0.17   0.17   0.17
+U:   0.17   0.50   0.17   0.50   0.17
+"""
+        self.assertEqual(str(m_rna.pwm), expected_forward_rna_pwm)
+        expected_reverse_rna_counts = """        0      1      2      3      4
+A:   0.00   1.00   0.00   1.00   0.00
+C:   0.00   0.00   0.00   0.00   0.00
+G:   0.00   0.00   0.00   0.00   0.00
+U:   1.00   0.00   1.00   0.00   1.00
+"""
+        self.assertEqual(
+            str(m_rna.reverse_complement().counts), expected_reverse_rna_counts
+        )
+        expected_reverse_rna_pwm = """        0      1      2      3      4
+A:   0.17   0.50   0.17   0.50   0.17
+C:   0.17   0.17   0.17   0.17   0.17
+G:   0.17   0.17   0.17   0.17   0.17
+U:   0.50   0.17   0.50   0.17   0.50
+"""
+        self.assertEqual(str(m_rna.reverse_complement().pwm), expected_reverse_rna_pwm)
+
+
+        # TODO: test with counts
     
     def __str__(self):
         return f"{self.passed} tests passed out of {self.total} tests"
@@ -171,4 +237,5 @@ tests.test_pwm()
 tests.test_pssm()
 tests.test_str()
 tests.test_mask()
+tests.test_reverse_complement()
 # print(tests)
