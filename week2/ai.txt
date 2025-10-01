@@ -1,4 +1,0 @@
-LLM version: ChatGPT (GPT-5)
-
-Promp: how can i make my own @test decorator in codon?
-Use: to automate our own test runner for codon tests, since unittest.TextTestRunner did not seem to be supported yet.
