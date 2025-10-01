@@ -2,5 +2,7 @@
 set -euxo pipefail
 PATH=${PATH}:${HOME}/.codon/bin
 echo "week2"
+echo "running Codon tests"
 tests_motif=$(codon run week2/code/tests_motif.py)
-echo $tests_motif
+echo "running Python tests"
+tests_motif=$(python3 week2/code/tests_python.py)
