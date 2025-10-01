@@ -35,7 +35,7 @@ class Record():
     command: str
     alphabet: Optional[str]
     background: Dict[str, float]
-    # sequences: list
+    sequences: List[str]
     data: List[motifs.Motif]
 
     def __init__(self):
@@ -44,7 +44,7 @@ class Record():
         self.command = ""
         self.alphabet = None
         self.background = {}
-        # self.sequences = []
+        self.sequences = []
         self.data = List[motifs.Motif]()
 
     def append(self, item: motifs.Motif):
