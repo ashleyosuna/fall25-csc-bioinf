@@ -62,7 +62,7 @@ class GenericPositionMatrix:
         return [self.data[letter][i] for letter in self.alphabet]
 
     # Always returns a dict mapping letters -> float
-    def get_column_dict(self, i: int, letters: str) -> Dict[str, float]:
+    def get_column_dict(self, i: int, letters: List[str]) -> Dict[str, float]:
         return {letter: self.data[letter][i] for letter in letters}
 
     # Always returns a dict mapping letters -> list of floats
@@ -89,10 +89,7 @@ class GenericPositionMatrix:
                 indices2 = range(*key2.indices(self.length))
                 return self.get_rows(list(indices2), letters1)
             elif isinstance(key2, int):
-                if len(letters1) == 1:
-                    return self.get_value(letters1[0], key2)
-                else:
-                    return self.get_column_dict(key2, letters1)
+                return self.get_column_dict(key2, letters1)
             else:
                 raise KeyError(f"Cannot understand second key {key2}")
 
