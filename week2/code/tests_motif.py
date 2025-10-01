@@ -698,6 +698,41 @@ def test_minimal_parser_rna():
     )
     tc.assertEqual(motif[2:9].consensus, "CUGUAUA")
 
+@test("test_pwm_getitem")
+def test_pwm_getitem():
+    tc = unittest.TestCase()
+    counts_ = {'A': [2.0, 9.0, 0.0, 1.0, 32.0, 3.0, 46.0, 1.0, 43.0, 15.0, 2.0, 2.0], 'C': [1.0, 33.0, 45.0, 45.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0], 'G': [39.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.0, 43.0], 'T': [4.0, 2.0, 0.0, 0.0, 13.0, 42.0, 0.0, 45.0, 3.0, 30.0, 0.0, 0.0]}
+    m = motifs.Motif(counts=counts_)
+    counts = m.counts
+    ints = range(13)
+    i0, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12 = ints
+    # slice, slice
+    d = counts[i1::i2, i2:i12:i3]
+    tc.assertEqual(len(d), 2)
+    tc.assertEqual(len(d["C"]), 4)
+    tc.assertEqual(len(d["T"]), 4)
+    tc.assertAlmostEqual(d["C"][i0], 45.0)
+    tc.assertAlmostEqual(d["C"][i1], 1.0)
+    tc.assertAlmostEqual(d["C"][i2], 0.0)
+    tc.assertAlmostEqual(d["C"][i3], 1.0)
+    tc.assertAlmostEqual(d["T"][i0], 0.0)
+    tc.assertAlmostEqual(d["T"][i1], 42.0)
+    tc.assertAlmostEqual(d["T"][i2], 3.0)
+    tc.assertAlmostEqual(d["T"][i3], 0.0)
+    #    slice, int
+    d = counts[i1::i2, i4]
+    tc.assertEqual(len(d), 2)
+    # tc.assertAlmostEqual(d["C"], 1.0)
+    # tc.assertAlmostEqual(d["T"], 13.0)
+
+    # int, slice
+    # print(type(slice(i3, i12, i2)))
+    # t = counts[i2, i3:i12:i2]
+    # tc.assertAlmostEqual(t[i0], 0.0)
+    # tc.assertAlmostEqual(t[i1], 0.0)
+    # tc.assertAlmostEqual(t[i2], 0.0)
+    # tc.assertAlmostEqual(t[i3], 0.0)
+    # tc.assertAlmostEqual(t[i4], 43.0)
 
 # def test_pwm_getitem(self):
 #     counts_ = {'A': [2.0, 9.0, 0.0, 1.0, 32.0, 3.0, 46.0, 1.0, 43.0, 15.0, 2.0, 2.0], 'C': [1.0, 33.0, 45.0, 45.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0], 'G': [39.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.0, 43.0], 'T': [4.0, 2.0, 0.0, 0.0, 13.0, 42.0, 0.0, 45.0, 3.0, 30.0, 0.0, 0.0]}
