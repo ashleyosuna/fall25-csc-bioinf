@@ -5,109 +5,66 @@ from typing import Optional, Dict, List
 from python import Bio.Seq as Seq
 from python import urllib.parse as parse
 from python import urllib.request as request
-# from urllib.request import Request
-# from urllib.request import urlopen
-# from python import Bio as Bio
 import utilities
 
 def create(instances, alphabet="ACGT"):
     alignment = Align.Alignment(instances)
     return Motif(alphabet=alphabet, alignment=alignment)
 
-# def parse(handle, fmt, strict=True):
-#     """Parse an output file from a motif finding program.
+def parse(handle, fmt, strict=True):
+    """Parse an output file from a motif finding program.
 
-#     Currently supported formats (case is ignored):
-#      - AlignAce:         AlignAce output file format
-#      - ClusterBuster:    Cluster Buster position frequency matrix format
-#      - XMS:              XMS matrix format
-#      - MEME:             MEME output file motif
-#      - MINIMAL:          MINIMAL MEME output file motif
-#      - MAST:             MAST output file motif
-#      - TRANSFAC:         TRANSFAC database file format
-#      - pfm-four-columns: Generic position-frequency matrix format with four columns. (CIS-BP, HOMER, HOCOMOCO, Neph, Tiffin)
-#      - pfm-four-rows:    Generic position-frequency matrix format with four row. (ScerTF, YeTFaSCo, hDPI, iDMMPMM, FlyFactorSurvey, Cys2His2 Zinc Finger Proteins PWM Predictor)
-#      - pfm:              JASPAR-style position-frequency matrix
-#      - jaspar:           JASPAR-style multiple PFM format
-#      - sites:            JASPAR-style sites file
+    Currently supported formats (case is ignored):
+     - AlignAce:         AlignAce output file format
+     - ClusterBuster:    Cluster Buster position frequency matrix format
+     - XMS:              XMS matrix format
+     - MEME:             MEME output file motif
+     - MINIMAL:          MINIMAL MEME output file motif
+     - MAST:             MAST output file motif
+     - TRANSFAC:         TRANSFAC database file format
+     - pfm-four-columns: Generic position-frequency matrix format with four columns. (CIS-BP, HOMER, HOCOMOCO, Neph, Tiffin)
+     - pfm-four-rows:    Generic position-frequency matrix format with four row. (ScerTF, YeTFaSCo, hDPI, iDMMPMM, FlyFactorSurvey, Cys2His2 Zinc Finger Proteins PWM Predictor)
+     - pfm:              JASPAR-style position-frequency matrix
+     - jaspar:           JASPAR-style multiple PFM format
+     - sites:            JASPAR-style sites file
 
-#     As files in the pfm and sites formats contain only a single motif,
-#     it is easier to use Bio.motifs.read() instead of Bio.motifs.parse()
-#     for those.
+    As files in the pfm and sites formats contain only a single motif,
+    it is easier to use Bio.motifs.read() instead of Bio.motifs.parse()
+    for those.
 
-#     For example:
+    For example:
 
-#     >>> from Bio import motifs
-#     >>> with open("motifs/alignace.out") as handle:
-#     ...     for m in motifs.parse(handle, "AlignAce"):
-#     ...         print(m.consensus)
-#     ...
-#     TCTACGATTGAG
-#     CTGCACCTAGCTACGAGTGAG
-#     GTGCCCTAAGCATACTAGGCG
-#     GCCACTAGCAGAGCAGGGGGC
-#     CGACTCAGAGGTT
-#     CCACGCTAAGAGAAGTGCCGGAG
-#     GCACGTCCCTGAGCA
-#     GTCCATCGCAAAGCGTGGGGC
-#     GAGATCAGAGGGCCG
-#     TGGACGCGGGG
-#     GACCAGAGCCTCGCATGGGGG
-#     AGCGCGCGTG
-#     GCCGGTTGCTGTTCATTAGG
-#     ACCGACGGCAGCTAAAAGGG
-#     GACGCCGGGGAT
-#     CGACTCGCGCTTACAAGG
+    >>> from Bio import motifs
+    >>> with open("motifs/alignace.out") as handle:
+    ...     for m in motifs.parse(handle, "AlignAce"):
+    ...         print(m.consensus)
+    ...
+    TCTACGATTGAG
+    CTGCACCTAGCTACGAGTGAG
+    GTGCCCTAAGCATACTAGGCG
+    GCCACTAGCAGAGCAGGGGGC
+    CGACTCAGAGGTT
+    CCACGCTAAGAGAAGTGCCGGAG
+    GCACGTCCCTGAGCA
+    GTCCATCGCAAAGCGTGGGGC
+    GAGATCAGAGGGCCG
+    TGGACGCGGGG
+    GACCAGAGCCTCGCATGGGGG
+    AGCGCGCGTG
+    GCCGGTTGCTGTTCATTAGG
+    ACCGACGGCAGCTAAAAGGG
+    GACGCCGGGGAT
+    CGACTCGCGCTTACAAGG
 
-#     If strict is True (default), the parser will raise a ValueError if the
-#     file contents does not strictly comply with the specified file format.
-#     """
-#     fmt = fmt.lower()
-#     # if fmt == "alignace":
-#     #     # from Bio.motifs import alignace
-#     #     # from python import Bio.motifs.alignace as alignace
-#     #     import alignace
-
-#     #     return alignace.read(handle)
-#     # elif fmt == "meme":
-#     #     # from Bio.motifs import meme
-#     #     from python import Bio.motfis.meme as meme
-
-#     #     return meme.read(handle)
-#     # elif fmt == "minimal":
-#     #     import minimal
-#     #     return minimal.read(handle)
-#     # elif fmt == "clusterbuster":
-#     #     from python import Bio.motifs.clusterbuster as clusterbuster
-
-#     #     return clusterbuster.read(handle)
-#     # elif fmt in ("pfm-four-columns", "pfm-four-rows"):
-#     #     # from Bio.motifs import pfm
-#     #     from python import Bio.motifs.pfm as pfm
-
-#     #     return pfm.read(handle, fmt)
-#     # elif fmt == "xms":
-#     #     # from Bio.motifs import xms
-#     #     from python import Bio.motfis.xms
-
-#     #     return xms.read(handle)
-#     # elif fmt == "mast":
-#     #     # from Bio.motifs import mast
-#     #     from python import Bio.motifs.mast as mast
-
-#     #     return mast.read(handle)
-#     if fmt == "transfac":
-#         # from Bio.motifs import transfac
-#         # from python import Bio.motifs.transfac as transfac
-#         import transfac
-#         return transfac.read(handle, strict)
-#     # elif fmt in ("pfm", "sites", "jaspar"):
-#     #     # from Bio.motifs import jaspar
-#     #     from python import Bio.motifs.jaspar as jaspar
-
-#     #     return jaspar.read(handle, fmt)
-#     else:
-#         raise ValueError(f"Unknown format {fmt}")
+    If strict is True (default), the parser will raise a ValueError if the
+    file contents does not strictly comply with the specified file format.
+    """
+    fmt = fmt.lower()
+    if fmt == "minimal":
+        import minimal
+        return minimal.read(handle)
+    else:
+        raise ValueError(f"Unknown format {fmt}")
 
 class Motif:
     name: str
@@ -552,3 +509,23 @@ class Motif:
         with open(fname, "wb") as f:
             im = response.read()
             f.write(im)
+
+def write(motifs, fmt, **kwargs):
+    """Return a string representation of motifs in the given format.
+
+    Currently supported formats (case is ignored):
+     - clusterbuster: Cluster Buster position frequency matrix format
+     - pfm : JASPAR simple single Position Frequency Matrix
+     - jaspar : JASPAR multiple PFM format
+     - transfac : TRANSFAC like files
+
+    """
+    fmt = fmt.lower()
+    if fmt in ("pfm", "jaspar"):
+        return utilities.jaspar_write(motifs, fmt)
+    elif fmt == "transfac":
+        return utilities.transac_write(motifs)
+    elif fmt == "clusterbuster":
+        return utilities.clusterbuster_write(motifs, **kwargs)
+    else:
+        raise ValueError(f"Unknown format type {fmt}")
