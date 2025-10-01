@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+# set -euxo pipefail
 PATH=${PATH}:${HOME}/.codon/bin
 echo "week2"
 
