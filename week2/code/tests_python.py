@@ -24,6 +24,7 @@ G [  0.00   0.00   0.00   0.00   0.00]
 T [  0.00   1.00   0.00   1.00   0.00]
 """
         self.assertEqual(s1, expected_pfm)
+        self.assertEqual(s2, expected_jaspar)
         self.assertRaises(ValueError, lambda : m.format(format_spec="foo_bar"))
     
     def test_format_transfac(self):
@@ -654,33 +655,68 @@ U:   0.50   0.17   0.50   0.17   0.50
             )
         )
         self.assertEqual(motif[2:9].consensus, "CUGUAUA")
+    
+    def test_pwm_getitem(self):
+        counts_ = {'A': [2.0, 9.0, 0.0, 1.0, 32.0, 3.0, 46.0, 1.0, 43.0, 15.0, 2.0, 2.0], 'C': [1.0, 33.0, 45.0, 45.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0], 'G': [39.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.0, 43.0], 'T': [4.0, 2.0, 0.0, 0.0, 13.0, 42.0, 0.0, 45.0, 3.0, 30.0, 0.0, 0.0]}
+        m = motifs.Motif(counts=counts_)
+        counts = m.counts
+        ints = range(13)
+        i0, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12 = ints
+        # slice, slice
+        d = counts[i1::i2, i2:i12:i3]
+        self.assertEqual(len(d), 2)
+        self.assertEqual(len(d["C"]), 4)
+        self.assertEqual(len(d["T"]), 4)
+        self.assertAlmostEqual(d["C"][i0], 45.0)
+        self.assertAlmostEqual(d["C"][i1], 1.0)
+        self.assertAlmostEqual(d["C"][i2], 0.0)
+        self.assertAlmostEqual(d["C"][i3], 1.0)
+        self.assertAlmostEqual(d["T"][i0], 0.0)
+        self.assertAlmostEqual(d["T"][i1], 42.0)
+        self.assertAlmostEqual(d["T"][i2], 3.0)
+        self.assertAlmostEqual(d["T"][i3], 0.0)
+        #    slice, int
+        d = counts[i1::i2, i4]
+        self.assertEqual(len(d), 2)
+        self.assertAlmostEqual(d["C"], 1.0)
+        self.assertAlmostEqual(d["T"], 13.0)
+    
+    def test_pwm_mixed(self):
+        counts_ = {'A': [2.0, 9.0, 0.0, 1.0, 32.0, 3.0, 46.0, 1.0, 43.0, 15.0, 2.0, 2.0], 'C': [1.0, 33.0, 45.0, 45.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0], 'G': [39.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.0, 43.0], 'T': [4.0, 2.0, 0.0, 0.0, 13.0, 42.0, 0.0, 45.0, 3.0, 30.0, 0.0, 0.0]}
+        m = motifs.Motif(counts=counts_)
+        counts = m.counts
+        pwm = counts.normalize(pseudocounts=0.25)
+        pssm = pwm.log_odds()
+        result = pssm.calculate(str(Seq.Seq("AcGTgTGCGtaGTGCGT")))
+        self.assertEqual(6, len(result))
+        self.assertAlmostEqual(float(result[0]), -29.18363571, places=5)
+        self.assertAlmostEqual(float(result[1]), -38.3365097, places=5)
+        self.assertAlmostEqual(float(result[2]), -29.17756271, places=5)
+        self.assertAlmostEqual(float(result[3]), -38.04542542, places=5)
+        self.assertAlmostEqual(float(result[4]), -20.3014183, places=5)
+        self.assertAlmostEqual(float(result[5]), -25.18009186, places=5)
+
+    def test_pwm_simple(self):
+        counts = {'A': [2.0, 9.0, 0.0, 1.0, 32.0, 3.0, 46.0, 1.0, 43.0, 15.0, 2.0, 2.0], 'C': [1.0, 33.0, 45.0, 45.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0], 'G': [39.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.0, 43.0], 'T': [4.0, 2.0, 0.0, 0.0, 13.0, 42.0, 0.0, 45.0, 3.0, 30.0, 0.0, 0.0]}
+        m = motifs.Motif(counts=counts)
+        s = str(Seq.Seq("ACGTGTGCGTAGTGCGT"))
+        pwm = m.counts.normalize(pseudocounts=0.25)
+        pssm = pwm.log_odds()
+        result = pssm.calculate(s)
+        self.assertEqual(6, len(result))
+        # The fast C-code in Bio/motifs/_pwm.c stores all results as 32-bit
+        # floats; the slower Python code in Bio/motifs/__init__.py uses 64-bit
+        # doubles. The C-code and Python code results will therefore not be
+        # exactly equal. Test the first 5 decimal places only to avoid either
+        # the C-code or the Python code to inadvertently fail this test.
+        self.assertAlmostEqual(float(result[0]), -29.18363571, places=5)
+        self.assertAlmostEqual(float(result[1]), -38.3365097, places=5)
+        self.assertAlmostEqual(float(result[2]), -29.17756271, places=5)
+        self.assertAlmostEqual(float(result[3]), -38.04542542, places=5)
+        self.assertAlmostEqual(float(result[4]), -20.3014183, places=5)
+        self.assertAlmostEqual(float(result[5]), -25.18009186, places=5)
 
 tests = TestMotif()
-
-# shitty test runner
-# def run_test(name, func):
-#     try:
-#         func()
-#         print(f"{name} passed.")
-#     except:
-#         print(f"{name} failed")
-
-# run_test("test_format", tests.test_format)
-# run_test("test_relative_entropy_alignment", tests.test_relative_entropy_alignment)
-# run_test("test_relative_entropy_counts", tests.test_relative_entropy_counts)
-# run_test("test_pwm", tests.test_pwm)
-# run_test("test_pssm", tests.test_pssm)
-# run_test("test_str", tests.test_str)
-# run_test("test_mask", tests.test_mask)
-# run_test("test_reverse_complement", tests.test_reverse_complement)
-# run_test("test_consensus", tests.test_consensus)
-# run_test("test_anticonsensus", tests.test_anticonsensus)
-# run_test("test_degenerate_consensus", tests.test_degenerate_consensus)
-# run_test("test_degenerate_consensus_with_ties", tests.test_degenerate_consensus_with_ties)
-# run_test("test_degenerate_consensus_rna", tests.test_degenerate_consensus_rna)
-# run_test("test_getitem", tests.test_getitem)
-# run_test("test_format_transfac", tests.test_format_transfac)
-# run_test("test_format_clusterbuster", tests.test_format_clusterbuster)
 
 runner = unittest.TextTestRunner(verbosity=2)
 unittest.main(testRunner=runner)
