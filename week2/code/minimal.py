@@ -134,15 +134,3 @@ def _read_lpm(record, handle, length, num_occurrences):
             break
     c = dict(zip(record.alphabet, counts))
     return c
-
-# with open("week2/tests/meme.out") as f:
-#     record = read(f)
-#     for motif in record:
-#         print(motif.name, str(motif))
-
-# with open("week2/tests/minimal_test.meme") as f:
-#     record = read(f)
-#     motif: motifs.Motif = record[0]
-#     print(motif.name)
-#     motif = record['IFXA']
-#     print(motif.name)
