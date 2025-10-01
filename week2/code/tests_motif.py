@@ -654,6 +654,113 @@ U:   0.50   0.17   0.50   0.17   0.50
         )
         self.assertEqual(motif[2:9].consensus, "CUGUAUA")
 
+    # def test_pwm_getitem(self):
+    #     counts_ = {'A': [2.0, 9.0, 0.0, 1.0, 32.0, 3.0, 46.0, 1.0, 43.0, 15.0, 2.0, 2.0], 'C': [1.0, 33.0, 45.0, 45.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0], 'G': [39.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.0, 43.0], 'T': [4.0, 2.0, 0.0, 0.0, 13.0, 42.0, 0.0, 45.0, 3.0, 30.0, 0.0, 0.0]}
+    #     m = motifs.Motif(counts=counts_)
+    #     counts = m.counts
+    #     python_integers = range(13)
+    #     numpy_integers = np.array(python_integers)
+    #     integers = {"python": python_integers, "numpy": numpy_integers}
+    #     for int_type in ("python", "numpy"):
+    #         i0, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12 = integers[int_type]
+    #         msg = f"using {int_type} integers as indices"
+    #         # slice, slice
+    #         d = counts[i1::i2, i2:i12:i3]
+    #         self.assertIsInstance(d, dict, msg=msg)
+    #         self.assertEqual(len(d), 2, msg=msg)
+    #         self.assertEqual(len(d["C"]), 4, msg=msg)
+    #         self.assertEqual(len(d["T"]), 4, msg=msg)
+    #         self.assertAlmostEqual(d["C"][i0], 45.0, msg=msg)
+    #         self.assertAlmostEqual(d["C"][i1], 1.0, msg=msg)
+    #         self.assertAlmostEqual(d["C"][i2], 0.0, msg=msg)
+    #         self.assertAlmostEqual(d["C"][i3], 1.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"][i0], 0.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"][i1], 42.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"][i2], 3.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"][i3], 0.0, msg=msg)
+    #         # slice, int
+    #         d = counts[i1::i2, i4]
+    #         self.assertIsInstance(d, dict, msg=msg)
+    #         self.assertEqual(len(d), 2, msg=msg)
+    #         self.assertAlmostEqual(d["C"], 1.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"], 13.0, msg=msg)
+    #         # int, slice
+    #         t = counts[i2, i3:i12:i2]
+    #         self.assertIsInstance(t, tuple, msg=msg)
+    #         self.assertAlmostEqual(t[i0], 0.0, msg=msg)
+    #         self.assertAlmostEqual(t[i1], 0.0, msg=msg)
+    #         self.assertAlmostEqual(t[i2], 0.0, msg=msg)
+    #         self.assertAlmostEqual(t[i3], 0.0, msg=msg)
+    #         self.assertAlmostEqual(t[i4], 43.0, msg=msg)
+    #         # int, int
+    #         v = counts[i1, i5]
+    #         self.assertAlmostEqual(v, 1.0, msg=msg)
+    #         # tuple, slice
+    #         d = counts[(i0, i3), i3:i12:i2]
+    #         self.assertIsInstance(d, dict, msg=msg)
+    #         self.assertEqual(len(d), 2, msg=msg)
+    #         self.assertEqual(len(d["A"]), 5, msg=msg)
+    #         self.assertEqual(len(d["T"]), 5, msg=msg)
+    #         self.assertAlmostEqual(d["A"][i0], 1.0, msg=msg)
+    #         self.assertAlmostEqual(d["A"][i1], 3.0, msg=msg)
+    #         self.assertAlmostEqual(d["A"][i2], 1.0, msg=msg)
+    #         self.assertAlmostEqual(d["A"][i3], 15.0, msg=msg)
+    #         self.assertAlmostEqual(d["A"][i4], 2.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"][i0], 0.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"][i1], 42.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"][i2], 45.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"][i3], 30.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"][i4], 0.0, msg=msg)
+    #         # tuple, int
+    #         d = counts[(i0, i3), i5]
+    #         self.assertIsInstance(d, dict, msg=msg)
+    #         self.assertEqual(len(d), 2, msg=msg)
+    #         self.assertAlmostEqual(d["A"], 3.0, msg=msg)
+    #         self.assertAlmostEqual(d["T"], 42.0, msg=msg)
+    #         # str, slice
+    #         t = counts["C", i2:i12:i4]
+    #         self.assertIsInstance(t, tuple, msg=msg)
+    #         self.assertAlmostEqual(t[i0], 45.0, msg=msg)
+    #         self.assertAlmostEqual(t[i1], 0.0, msg=msg)
+    #         self.assertAlmostEqual(t[i2], 0.0, msg=msg)
+    #         # str, int
+    #         self.assertAlmostEqual(counts["T", i4], 13.0, msg=msg)
+    
+    def test_pwm_mixed(self):
+        counts_ = {'A': [2.0, 9.0, 0.0, 1.0, 32.0, 3.0, 46.0, 1.0, 43.0, 15.0, 2.0, 2.0], 'C': [1.0, 33.0, 45.0, 45.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0], 'G': [39.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.0, 43.0], 'T': [4.0, 2.0, 0.0, 0.0, 13.0, 42.0, 0.0, 45.0, 3.0, 30.0, 0.0, 0.0]}
+        m = motifs.Motif(counts=counts_)
+        counts = m.counts
+        pwm = counts.normalize(pseudocounts=0.25)
+        pssm = pwm.log_odds()
+        result = pssm.calculate(str(Seq.Seq("AcGTgTGCGtaGTGCGT")))
+        self.assertEqual(6, len(result))
+        self.assertAlmostEqual(float(result[0]), -29.18363571, places=5)
+        self.assertAlmostEqual(float(result[1]), -38.3365097, places=5)
+        self.assertAlmostEqual(float(result[2]), -29.17756271, places=5)
+        self.assertAlmostEqual(float(result[3]), -38.04542542, places=5)
+        self.assertAlmostEqual(float(result[4]), -20.3014183, places=5)
+        self.assertAlmostEqual(float(result[5]), -25.18009186, places=5)
+
+    def test_pwm_simple(self):
+        counts = {'A': [2.0, 9.0, 0.0, 1.0, 32.0, 3.0, 46.0, 1.0, 43.0, 15.0, 2.0, 2.0], 'C': [1.0, 33.0, 45.0, 45.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0], 'G': [39.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 44.0, 43.0], 'T': [4.0, 2.0, 0.0, 0.0, 13.0, 42.0, 0.0, 45.0, 3.0, 30.0, 0.0, 0.0]}
+        m = motifs.Motif(counts=counts)
+        s = str(Seq.Seq("ACGTGTGCGTAGTGCGT"))
+        pwm = m.counts.normalize(pseudocounts=0.25)
+        pssm = pwm.log_odds()
+        result = pssm.calculate(s)
+        self.assertEqual(6, len(result))
+        # The fast C-code in Bio/motifs/_pwm.c stores all results as 32-bit
+        # floats; the slower Python code in Bio/motifs/__init__.py uses 64-bit
+        # doubles. The C-code and Python code results will therefore not be
+        # exactly equal. Test the first 5 decimal places only to avoid either
+        # the C-code or the Python code to inadvertently fail this test.
+        self.assertAlmostEqual(float(result[0]), -29.18363571, places=5)
+        self.assertAlmostEqual(float(result[1]), -38.3365097, places=5)
+        self.assertAlmostEqual(float(result[2]), -29.17756271, places=5)
+        self.assertAlmostEqual(float(result[3]), -38.04542542, places=5)
+        self.assertAlmostEqual(float(result[4]), -20.3014183, places=5)
+        self.assertAlmostEqual(float(result[5]), -25.18009186, places=5)
+
 tests = TestMotif()
 
 # shitty test runner
@@ -683,3 +790,6 @@ def run_test(name, func):
 run_test("test_minimal_parser_1", tests.test_minimal_parser_1)
 run_test("test_minimal_parser_2", tests.test_minimal_parser_2)
 run_test("test_minimal_parser_rna", tests.test_minimal_parser_rna)
+run_test("test_pwm_getitem", tests.test_pwm_getitem)
+run_test("test_pwm_simple", tests.test_pwm_simple)
+run_test("test_pwm_mixed", tests.test_pwm_mixed)
