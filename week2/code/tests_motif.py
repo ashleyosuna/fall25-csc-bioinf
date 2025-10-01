@@ -4,6 +4,7 @@ import numpy as np
 import __init__ as motifs
 from python import Bio.Seq as Seq
 from typing import Tuple, NoneType
+import time
 
 tests: list[tuple[str, function[Tuple, NoneType]]] = []
 
@@ -69,7 +70,6 @@ def test_format_clusterbuster():
 1	0	0	0
 """
     tc.assertEqual(s, expected)
-test_format_clusterbuster()
 
 @test("test_relative_entropy_alignment")
 def test_relative_entropy_alignment():
@@ -349,7 +349,6 @@ def test_anticonsensus():
 
     expected_anticonsensus = "TATAT"
     tc.assertEqual(str(m.anticonsensus), expected_anticonsensus)
-test_anticonsensus()
 
 @test("test_degenerate_consensus")
 def test_degenerate_consensus():
@@ -508,7 +507,6 @@ def test_minimal_parser_1():
         )
     )
     tc.assertEqual(motif[2:9].consensus, "CTGTATA")
-test_minimal_parser_1()
 
 @test("test_minimal_parser_2")
 def test_minimal_parser_2():
@@ -767,6 +765,7 @@ def test_pwm_simple():
 
 def testRunner():
     passed = total = 0
+    start = time.perf_counter()
     for name, test in tests:
         try:
             test()
@@ -777,6 +776,8 @@ def testRunner():
         except:
             print(f"{name} ... ERROR")
         total += 1
-    print(f"\n\n{passed} out of {total} tests passed\n")
+    end = time.perf_counter()
+    elapsed_time = end - start
+    print(f"\n\n{passed} out of {total} tests passed; tests ran in {elapsed_time:.6f} seconds\n")
 
 testRunner()
