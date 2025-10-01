@@ -417,293 +417,293 @@ def test_getitem():
     tc.assertRaises(TypeError, lambda: m['A'])
 test_getitem()
 
-# @test
-# def test_minimal_parser_1():
-#     tc = unittest.TestCase()
-#     """Parse motifs/minimal_test.meme file."""
-#     with open("week2/tests/minimal_test.meme") as stream:
-#         record = motifs.parse(stream, "minimal")
-#     tc.assertEqual(record.version, "4")
-#     tc.assertEqual(record.alphabet, "ACGT")
-#     tc.assertEqual(len(record.sequences), 0)
-#     tc.assertEqual(record.command, "")
-#     tc.assertEqual(len(record), 3)
-#     motif = record[0]
-#     tc.assertEqual(motif.name, "KRP")
-#     # tc.assertEqual(record["KRP"], motif)
-#     # tc.assertEqual(motif.num_occurrences, 17)
-#     tc.assertEqual(motif.length, 19)
-#     tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
-#     tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
-#     tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
-#     tc.assertAlmostEqual(motif.background["T"], 0.30569430569430567)
-#     # tc.assertAlmostEqual(motif.evalue, 4.1e-09, places=10)
-#     tc.assertEqual(motif.alphabet, "ACGT")
-#     tc.assertIsNone(motif.alignment)
-#     tc.assertEqual(motif.consensus, "TGTGATCGAGGTCACACTT")
-#     tc.assertEqual(motif.degenerate_consensus, "TGTGANNNWGNTCACAYWW")
-#     tc.assertTrue(
-#         np.allclose(
-#             motif.relative_entropy,
-#             np.array(
-#                 [
-#                     1.1684297174927525,
-#                     0.9432809925744818,
-#                     1.4307101633876265,
-#                     1.1549413780465179,
-#                     0.9308256303218774,
-#                     0.009164393966550805,
-#                     0.20124190687894253,
-#                     0.17618542656995528,
-#                     0.36777933103380855,
-#                     0.6635834532368525,
-#                     0.07729943368061855,
-#                     0.9838293592717438,
-#                     1.72489868427398,
-#                     0.8397561713453014,
-#                     1.72489868427398,
-#                     0.8455332015343343,
-#                     0.3106481207768122,
-#                     0.7382733641762232,
-#                     0.537435993300495,
-#                 ]
-#             ),
-#         )
-#     )
-#     tc.assertEqual(motif[2:9].consensus, "TGATCGA")
-#     motif = record[1]
-#     tc.assertEqual(motif.name, "IFXA")
-#     # tc.assertEqual(record["IFXA"], motif)
-#     # tc.assertEqual(motif.num_occurrences, 14)
-#     tc.assertEqual(motif.length, 18)
-#     tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
-#     tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
-#     tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
-#     tc.assertAlmostEqual(motif.background["T"], 0.30569430569430567)
-#     # tc.assertAlmostEqual(motif.evalue, 3.2e-35, places=36)
-#     tc.assertEqual(motif.alphabet, "ACGT")
-#     tc.assertIsNone(motif.alignment)
-#     tc.assertEqual(motif.consensus, "TACTGTATATATATCCAG")
-#     tc.assertEqual(motif.degenerate_consensus, "TACTGTATATAHAWMCAG")
-#     tc.assertTrue(
-#         np.allclose(
-#             motif.relative_entropy,
-#             np.array(
-#                 [
-#                     0.9632889858595118,
-#                     1.02677956765017,
-#                     2.451526420551951,
-#                     1.7098384161433415,
-#                     2.2598671267551107,
-#                     1.7098384161433415,
-#                     1.02677956765017,
-#                     1.391583804103081,
-#                     1.02677956765017,
-#                     1.1201961888781142,
-#                     0.27822438781180836,
-#                     0.36915366971717867,
-#                     1.7240522753630425,
-#                     0.3802185945622609,
-#                     0.790937683007783,
-#                     2.451526420551951,
-#                     1.7240522753630425,
-#                     1.3924085743645374,
-#                 ]
-#             ),
-#         )
-#     )
-#     tc.assertEqual(motif[2:9].consensus, "CTGTATA")
-# test_minimal_parser_1()
+@test
+def test_minimal_parser_1():
+    tc = unittest.TestCase()
+    """Parse motifs/minimal_test.meme file."""
+    with open("week2/tests/minimal_test.meme") as stream:
+        record = motifs.parse(stream, "minimal")
+    tc.assertEqual(record.version, "4")
+    tc.assertEqual(record.alphabet, "ACGT")
+    tc.assertEqual(len(record.sequences), 0)
+    tc.assertEqual(record.command, "")
+    tc.assertEqual(len(record), 3)
+    motif = record[0]
+    tc.assertEqual(motif.name, "KRP")
+    # tc.assertEqual(record["KRP"], motif)
+    # tc.assertEqual(motif.num_occurrences, 17)
+    tc.assertEqual(motif.length, 19)
+    tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
+    tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
+    tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
+    tc.assertAlmostEqual(motif.background["T"], 0.30569430569430567)
+    # tc.assertAlmostEqual(motif.evalue, 4.1e-09, places=10)
+    tc.assertEqual(motif.alphabet, "ACGT")
+    tc.assertIsNone(motif.alignment)
+    tc.assertEqual(motif.consensus, "TGTGATCGAGGTCACACTT")
+    tc.assertEqual(motif.degenerate_consensus, "TGTGANNNWGNTCACAYWW")
+    tc.assertTrue(
+        np.allclose(
+            motif.relative_entropy,
+            np.array(
+                [
+                    1.1684297174927525,
+                    0.9432809925744818,
+                    1.4307101633876265,
+                    1.1549413780465179,
+                    0.9308256303218774,
+                    0.009164393966550805,
+                    0.20124190687894253,
+                    0.17618542656995528,
+                    0.36777933103380855,
+                    0.6635834532368525,
+                    0.07729943368061855,
+                    0.9838293592717438,
+                    1.72489868427398,
+                    0.8397561713453014,
+                    1.72489868427398,
+                    0.8455332015343343,
+                    0.3106481207768122,
+                    0.7382733641762232,
+                    0.537435993300495,
+                ]
+            ),
+        )
+    )
+    tc.assertEqual(motif[2:9].consensus, "TGATCGA")
+    motif = record[1]
+    tc.assertEqual(motif.name, "IFXA")
+    # tc.assertEqual(record["IFXA"], motif)
+    # tc.assertEqual(motif.num_occurrences, 14)
+    tc.assertEqual(motif.length, 18)
+    tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
+    tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
+    tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
+    tc.assertAlmostEqual(motif.background["T"], 0.30569430569430567)
+    # tc.assertAlmostEqual(motif.evalue, 3.2e-35, places=36)
+    tc.assertEqual(motif.alphabet, "ACGT")
+    tc.assertIsNone(motif.alignment)
+    tc.assertEqual(motif.consensus, "TACTGTATATATATCCAG")
+    tc.assertEqual(motif.degenerate_consensus, "TACTGTATATAHAWMCAG")
+    tc.assertTrue(
+        np.allclose(
+            motif.relative_entropy,
+            np.array(
+                [
+                    0.9632889858595118,
+                    1.02677956765017,
+                    2.451526420551951,
+                    1.7098384161433415,
+                    2.2598671267551107,
+                    1.7098384161433415,
+                    1.02677956765017,
+                    1.391583804103081,
+                    1.02677956765017,
+                    1.1201961888781142,
+                    0.27822438781180836,
+                    0.36915366971717867,
+                    1.7240522753630425,
+                    0.3802185945622609,
+                    0.790937683007783,
+                    2.451526420551951,
+                    1.7240522753630425,
+                    1.3924085743645374,
+                ]
+            ),
+        )
+    )
+    tc.assertEqual(motif[2:9].consensus, "CTGTATA")
+test_minimal_parser_1()
 
-# @test
-# def test_minimal_parser_2():
-#     tc = unittest.TestCase()
-#     with open("week2/tests/minimal_test.meme") as stream:
-#         record = motifs.parse(stream, "minimal")
-#     motif = record[2]
-#     tc.assertEqual(motif.name, "IFXA_no_nsites_no_evalue")
-#     # tc.assertEqual(record["IFXA_no_nsites_no_evalue"], motif)
-#     # tc.assertEqual(motif.num_occurrences, 20)
-#     tc.assertEqual(motif.length, 18)
-#     tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
-#     tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
-#     tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
-#     tc.assertAlmostEqual(motif.background["T"], 0.30569430569430567)
-#     # tc.assertAlmostEqual(motif.evalue, 0.0, places=36)
-#     tc.assertEqual(motif.alphabet, "ACGT")
-#     tc.assertIsNone(motif.alignment)
-#     tc.assertEqual(motif.consensus, "TACTGTATATATATCCAG")
-#     tc.assertEqual(motif.degenerate_consensus, "TACTGTATATAHAWMCAG")
-#     tc.assertTrue(
-#         np.allclose(
-#             motif.relative_entropy,
-#             np.array(
-#                 [
-#                     0.99075309,
-#                     1.16078104,
-#                     2.45152642,
-#                     1.70983842,
-#                     2.25986713,
-#                     1.70983842,
-#                     1.16078104,
-#                     1.46052586,
-#                     1.16078104,
-#                     1.10213019,
-#                     0.29911041,
-#                     0.36915367,
-#                     1.72405228,
-#                     0.37696488,
-#                     0.85258086,
-#                     2.45152642,
-#                     1.72405228,
-#                     1.42793329,
-#                 ]
-#             ),
-#         )
-#     )
-#     tc.assertEqual(motif[2:9].consensus, "CTGTATA")
-# test_minimal_parser_2()
+@test
+def test_minimal_parser_2():
+    tc = unittest.TestCase()
+    with open("week2/tests/minimal_test.meme") as stream:
+        record = motifs.parse(stream, "minimal")
+    motif = record[2]
+    tc.assertEqual(motif.name, "IFXA_no_nsites_no_evalue")
+    # tc.assertEqual(record["IFXA_no_nsites_no_evalue"], motif)
+    # tc.assertEqual(motif.num_occurrences, 20)
+    tc.assertEqual(motif.length, 18)
+    tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
+    tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
+    tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
+    tc.assertAlmostEqual(motif.background["T"], 0.30569430569430567)
+    # tc.assertAlmostEqual(motif.evalue, 0.0, places=36)
+    tc.assertEqual(motif.alphabet, "ACGT")
+    tc.assertIsNone(motif.alignment)
+    tc.assertEqual(motif.consensus, "TACTGTATATATATCCAG")
+    tc.assertEqual(motif.degenerate_consensus, "TACTGTATATAHAWMCAG")
+    tc.assertTrue(
+        np.allclose(
+            motif.relative_entropy,
+            np.array(
+                [
+                    0.99075309,
+                    1.16078104,
+                    2.45152642,
+                    1.70983842,
+                    2.25986713,
+                    1.70983842,
+                    1.16078104,
+                    1.46052586,
+                    1.16078104,
+                    1.10213019,
+                    0.29911041,
+                    0.36915367,
+                    1.72405228,
+                    0.37696488,
+                    0.85258086,
+                    2.45152642,
+                    1.72405228,
+                    1.42793329,
+                ]
+            ),
+        )
+    )
+    tc.assertEqual(motif[2:9].consensus, "CTGTATA")
+test_minimal_parser_2()
 
-# @test
-# def test_minimal_parser_rna():
-#     tc = unittest.TestCase()
-#     """Test if Bio.motifs can parse MEME output files using RNA."""
-#     with open("week2/tests/minimal_test_rna.meme") as stream:
-#         record = motifs.parse(stream, "minimal")
-#     tc.assertEqual(record.version, "4")
-#     tc.assertEqual(record.alphabet, "ACGU")
-#     tc.assertEqual(len(record.sequences), 0)
-#     tc.assertEqual(record.command, "")
-#     tc.assertEqual(len(record), 3)
-#     motif = record[0]
-#     tc.assertEqual(motif.name, "KRP_fake_RNA")
-#     # tc.assertEqual(record["KRP_fake_RNA"], motif)
-#     # tc.assertEqual(motif.num_occurrences, 17)
-#     tc.assertEqual(motif.length, 19)
-#     tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
-#     tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
-#     tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
-#     tc.assertAlmostEqual(motif.background["U"], 0.30569430569430567)
-#     # tc.assertAlmostEqual(motif.evalue, 4.1e-09, places=10)
-#     tc.assertEqual(motif.alphabet, "ACGU")
-#     tc.assertIsNone(motif.alignment)
-#     tc.assertEqual(motif.consensus, "UGUGAUCGAGGUCACACUU")
-#     tc.assertEqual(motif.degenerate_consensus, "UGUGANNNWGNUCACAYWW")
-#     tc.assertTrue(
-#         np.allclose(
-#             motif.relative_entropy,
-#             np.array(
-#                 [
-#                     1.1684297174927525,
-#                     0.9432809925744818,
-#                     1.4307101633876265,
-#                     1.1549413780465179,
-#                     0.9308256303218774,
-#                     0.009164393966550805,
-#                     0.20124190687894253,
-#                     0.17618542656995528,
-#                     0.36777933103380855,
-#                     0.6635834532368525,
-#                     0.07729943368061855,
-#                     0.9838293592717438,
-#                     1.72489868427398,
-#                     0.8397561713453014,
-#                     1.72489868427398,
-#                     0.8455332015343343,
-#                     0.3106481207768122,
-#                     0.7382733641762232,
-#                     0.537435993300495,
-#                 ]
-#             ),
-#         )
-#     )
-#     tc.assertEqual(motif[2:9].consensus, "UGAUCGA")
-#     motif = record[1]
-#     tc.assertEqual(motif.name, "IFXA_fake_RNA")
-#     # tc.assertEqual(record["IFXA_fake_RNA"], motif)
-#     # tc.assertEqual(motif.num_occurrences, 14)
-#     tc.assertEqual(motif.length, 18)
-#     tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
-#     tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
-#     tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
-#     tc.assertAlmostEqual(motif.background["U"], 0.30569430569430567)
-#     # tc.assertAlmostEqual(motif.evalue, 3.2e-35, places=36)
-#     tc.assertEqual(motif.alphabet, "ACGU")
-#     tc.assertIsNone(motif.alignment)
-#     tc.assertEqual(motif.consensus, "UACUGUAUAUAUAUCCAG")
-#     tc.assertEqual(motif.degenerate_consensus, "UACUGUAUAUAHAWMCAG")
-#     tc.assertTrue(
-#         np.allclose(
-#             motif.relative_entropy,
-#             np.array(
-#                 [
-#                     0.9632889858595118,
-#                     1.02677956765017,
-#                     2.451526420551951,
-#                     1.7098384161433415,
-#                     2.2598671267551107,
-#                     1.7098384161433415,
-#                     1.02677956765017,
-#                     1.391583804103081,
-#                     1.02677956765017,
-#                     1.1201961888781142,
-#                     0.27822438781180836,
-#                     0.36915366971717867,
-#                     1.7240522753630425,
-#                     0.3802185945622609,
-#                     0.790937683007783,
-#                     2.451526420551951,
-#                     1.7240522753630425,
-#                     1.3924085743645374,
-#                 ]
-#             ),
-#         )
-#     )
-#     tc.assertEqual(motif[2:9].consensus, "CUGUAUA")
+@test
+def test_minimal_parser_rna():
+    tc = unittest.TestCase()
+    """Test if Bio.motifs can parse MEME output files using RNA."""
+    with open("week2/tests/minimal_test_rna.meme") as stream:
+        record = motifs.parse(stream, "minimal")
+    tc.assertEqual(record.version, "4")
+    tc.assertEqual(record.alphabet, "ACGU")
+    tc.assertEqual(len(record.sequences), 0)
+    tc.assertEqual(record.command, "")
+    tc.assertEqual(len(record), 3)
+    motif = record[0]
+    tc.assertEqual(motif.name, "KRP_fake_RNA")
+    # tc.assertEqual(record["KRP_fake_RNA"], motif)
+    # tc.assertEqual(motif.num_occurrences, 17)
+    tc.assertEqual(motif.length, 19)
+    tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
+    tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
+    tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
+    tc.assertAlmostEqual(motif.background["U"], 0.30569430569430567)
+    # tc.assertAlmostEqual(motif.evalue, 4.1e-09, places=10)
+    tc.assertEqual(motif.alphabet, "ACGU")
+    tc.assertIsNone(motif.alignment)
+    tc.assertEqual(motif.consensus, "UGUGAUCGAGGUCACACUU")
+    tc.assertEqual(motif.degenerate_consensus, "UGUGANNNWGNUCACAYWW")
+    tc.assertTrue(
+        np.allclose(
+            motif.relative_entropy,
+            np.array(
+                [
+                    1.1684297174927525,
+                    0.9432809925744818,
+                    1.4307101633876265,
+                    1.1549413780465179,
+                    0.9308256303218774,
+                    0.009164393966550805,
+                    0.20124190687894253,
+                    0.17618542656995528,
+                    0.36777933103380855,
+                    0.6635834532368525,
+                    0.07729943368061855,
+                    0.9838293592717438,
+                    1.72489868427398,
+                    0.8397561713453014,
+                    1.72489868427398,
+                    0.8455332015343343,
+                    0.3106481207768122,
+                    0.7382733641762232,
+                    0.537435993300495,
+                ]
+            ),
+        )
+    )
+    tc.assertEqual(motif[2:9].consensus, "UGAUCGA")
+    motif = record[1]
+    tc.assertEqual(motif.name, "IFXA_fake_RNA")
+    # tc.assertEqual(record["IFXA_fake_RNA"], motif)
+    # tc.assertEqual(motif.num_occurrences, 14)
+    tc.assertEqual(motif.length, 18)
+    tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
+    tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
+    tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
+    tc.assertAlmostEqual(motif.background["U"], 0.30569430569430567)
+    # tc.assertAlmostEqual(motif.evalue, 3.2e-35, places=36)
+    tc.assertEqual(motif.alphabet, "ACGU")
+    tc.assertIsNone(motif.alignment)
+    tc.assertEqual(motif.consensus, "UACUGUAUAUAUAUCCAG")
+    tc.assertEqual(motif.degenerate_consensus, "UACUGUAUAUAHAWMCAG")
+    tc.assertTrue(
+        np.allclose(
+            motif.relative_entropy,
+            np.array(
+                [
+                    0.9632889858595118,
+                    1.02677956765017,
+                    2.451526420551951,
+                    1.7098384161433415,
+                    2.2598671267551107,
+                    1.7098384161433415,
+                    1.02677956765017,
+                    1.391583804103081,
+                    1.02677956765017,
+                    1.1201961888781142,
+                    0.27822438781180836,
+                    0.36915366971717867,
+                    1.7240522753630425,
+                    0.3802185945622609,
+                    0.790937683007783,
+                    2.451526420551951,
+                    1.7240522753630425,
+                    1.3924085743645374,
+                ]
+            ),
+        )
+    )
+    tc.assertEqual(motif[2:9].consensus, "CUGUAUA")
 
-#     motif = record[2]
-#     tc.assertEqual(motif.name, "IFXA_no_nsites_no_evalue_fake_RNA")
-#     # tc.assertEqual(record["IFXA_no_nsites_no_evalue_fake_RNA"], motif)
-#     # tc.assertEqual(motif.num_occurrences, 20)
-#     tc.assertEqual(motif.length, 18)
-#     tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
-#     tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
-#     tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
-#     tc.assertAlmostEqual(motif.background["U"], 0.30569430569430567)
-#     # tc.assertAlmostEqual(motif.evalue, 0.0, places=36)
-#     tc.assertEqual(motif.alphabet, "ACGU")
-#     tc.assertIsNone(motif.alignment)
-#     tc.assertEqual(motif.consensus, "UACUGUAUAUAUAUCCAG")
-#     tc.assertEqual(motif.degenerate_consensus, "UACUGUAUAUAHAWMCAG")
-#     tc.assertTrue(
-#         np.allclose(
-#             motif.relative_entropy,
-#             np.array(
-#                 [
-#                     0.99075309,
-#                     1.16078104,
-#                     2.45152642,
-#                     1.70983842,
-#                     2.25986713,
-#                     1.70983842,
-#                     1.16078104,
-#                     1.46052586,
-#                     1.16078104,
-#                     1.10213019,
-#                     0.29911041,
-#                     0.36915367,
-#                     1.72405228,
-#                     0.37696488,
-#                     0.85258086,
-#                     2.45152642,
-#                     1.72405228,
-#                     1.42793329,
-#                 ]
-#             ),
-#         )
-#     )
-#     tc.assertEqual(motif[2:9].consensus, "CUGUAUA")
-# test_minimal_parser_rna()
+    motif = record[2]
+    tc.assertEqual(motif.name, "IFXA_no_nsites_no_evalue_fake_RNA")
+    # tc.assertEqual(record["IFXA_no_nsites_no_evalue_fake_RNA"], motif)
+    # tc.assertEqual(motif.num_occurrences, 20)
+    tc.assertEqual(motif.length, 18)
+    tc.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
+    tc.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
+    tc.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
+    tc.assertAlmostEqual(motif.background["U"], 0.30569430569430567)
+    # tc.assertAlmostEqual(motif.evalue, 0.0, places=36)
+    tc.assertEqual(motif.alphabet, "ACGU")
+    tc.assertIsNone(motif.alignment)
+    tc.assertEqual(motif.consensus, "UACUGUAUAUAUAUCCAG")
+    tc.assertEqual(motif.degenerate_consensus, "UACUGUAUAUAHAWMCAG")
+    tc.assertTrue(
+        np.allclose(
+            motif.relative_entropy,
+            np.array(
+                [
+                    0.99075309,
+                    1.16078104,
+                    2.45152642,
+                    1.70983842,
+                    2.25986713,
+                    1.70983842,
+                    1.16078104,
+                    1.46052586,
+                    1.16078104,
+                    1.10213019,
+                    0.29911041,
+                    0.36915367,
+                    1.72405228,
+                    0.37696488,
+                    0.85258086,
+                    2.45152642,
+                    1.72405228,
+                    1.42793329,
+                ]
+            ),
+        )
+    )
+    tc.assertEqual(motif[2:9].consensus, "CUGUAUA")
+test_minimal_parser_rna()
 
 
 # def test_pwm_getitem(self):
