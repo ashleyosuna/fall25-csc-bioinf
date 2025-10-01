@@ -6,5 +6,7 @@ Steps (rough outline from what i can remember rn)
 5. Write tests in one file
 
 Gotchas
+* we skip the python test for test_format_clusterbuster (codon test passes); it tries to access Motif.weight which is not possible (problem with biopython?)
 
 Time Spent
+3 - 6 hours every day since Monday Sep 22 (9 days)
