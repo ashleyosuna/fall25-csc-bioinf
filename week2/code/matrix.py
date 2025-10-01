@@ -565,36 +565,3 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
         for letter in self.alphabet:
             background[letter] /= total
         return ScoreDistribution(precision=precision, pssm=self, background=background)
-
-# values: Dict[str, List[int]] = {"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
-# positionMatrix = GenericPositionMatrix(alphabet="ACGT", values=values)
-# print(positionMatrix)
-# print(positionMatrix.consensus)
-# print(positionMatrix.anticonsensus)
-# print(positionMatrix.gc_content)
-# print(positionMatrix.degenerate_consensus)
-# print(positionMatrix.reverse_complement())
-
-# freqMatrix = FrequencyPositionMatrix(alphabet="ACGT", values={"A": [1, 2, 3], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]})
-# print(freqMatrix)
-# print(freqMatrix.normalize(pseudocounts=1))
-
-# positionMatrix2 = PositionWeightMatrix(alphabet="ACGT", counts=values)
-# print(positionMatrix2)
-# print('logodds', positionMatrix2.log_odds())
-
-# positionSpecific = PositionSpecificScoringMatrix(alphabet="ACGT", values=values)
-# values2: Dict[str, List[int]] = {"A": [2, 2, 2], "C": [2, 3, 4], "G": [1, 2, 3], "T": [2, 4, 5]}
-# positionSpecific2 = PositionSpecificScoringMatrix(alphabet="ACGT", values=values2)
-# print(positionSpecific)
-# print(positionSpecific.calculate("CGTA"))
-# print(positionSpecific.max)
-# print(positionSpecific.min)
-# print(positionSpecific.gc_content)
-# print(positionSpecific.mean())
-# print(positionSpecific.std())
-# print(positionSpecific.dist_pearson(positionSpecific2))
-# print(positionSpecific.distribution()) # might be working?
-# print(positionSpecific.search(sequence=seq))
-# for pos, score in positionSpecific.search(sequence="ACGT"):
-#     print(pos, score)
