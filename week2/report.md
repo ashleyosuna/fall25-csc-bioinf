@@ -2,9 +2,9 @@
 
 1. Port matrix functions first - as other files depend on it - and test individual functions
 2. Port minimal.py and thresholds.py, and test functions
-3. Convert \_pwm.c to codon
+3. Convert \_pwm.c to Codon
 4. Port motif class
-5. Write tests in one file
+5. Write tests for Codon in tests_motif.py - including a custom test runner
 
 # Gotchas
 
@@ -35,5 +35,5 @@
   (where i2, i3, i12, i2, and i0 are all integers)
   since t is of type dict[str, list[float]] and codon does not allow to index dictionaries of this type with integers.
 
-Time Spent
+# Time Spent
 3 - 6 hours every day since Monday Sep 22 (9 days)
