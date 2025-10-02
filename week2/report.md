@@ -1,4 +1,4 @@
-Steps (rough outline from what i can remember rn)
+# Steps
 
 1. Port matrix functions first - as other files depend on it - and test individual functions
 2. Port minimal.py and thresholds.py, and test functions
@@ -7,6 +7,21 @@ Steps (rough outline from what i can remember rn)
 5. Write tests in one file
 
 # Gotchas
+
+## Issues with subclassing
+
+- We had some issues with subclassing in Codon. The way GenericPositionMatrix is defined in biopython
+  GenericPositionMatrix is defined as a subclass of the dictionary class in biopython. Then, the other classes defined in matrix.py were defined as subclasses of the GenericPositionMatrix class. However, even after we defined **getitem** method for the GenericPositionMatrix class, it was not possible for us to index within the subclasses.
+
+  To bypass this, we instead did not define the GenericPositionMatrix class as a subclass of dictionary, but added an attribute to it called data that was a dictionary. We then implemented the **getitem** function for the GenericPositionMatrix such that it would index this data attribute. This way, subclasses of the GenericPositionMatrix were able to call the parent's **getitem** method without any issues.
+
+## Motif.format method
+
+- We were unable to simply import and call the Biopython write methods for the different formats. So instead we had to port them into Codon and put them into the utilities.py file so the program would compile and run correctly.
+
+## parse method (inside init.py)
+
+- We got the error 'File' object has no attribute '**to_py**' when trying to import and call the biopython read methods for the different formats (i.e., without porting them), as instructed, we simply removed all formats that we were not asked to port, so only the read function within minimal.py is called from within this function.
 
 ## Tests
 
