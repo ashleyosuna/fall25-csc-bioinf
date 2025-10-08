@@ -99,9 +99,11 @@ class TreeNode:
                 label = str(self._index)
             if include_distance:
                 if round_distance is None:
-                    return f"{label}:{self._distance}"
+                    return f"{label}:{self._distance:.1f}"
                 else:
-                    return f"{label}:{self._distance:.3f}"
+                    # TODO ?
+                    rounded = round(self._distance, round_distance)
+                    return f"{label}:{rounded}"
             else:
                 return f"{label}"
         else:
@@ -111,11 +113,13 @@ class TreeNode:
             ) for child in self._children]
             if include_distance:
                 if round_distance is None:
-                    return f"({','.join(child_strings)}):{self._distance}"
+                    return f"({','.join(child_strings)}):{self._distance:.1f}"
                 else:
+                    # TODO: fix not specifying number of decimal places in f string?
+                    rounded = round(self._distance, round_distance)
                     return (
                         f"({','.join(child_strings)}):"
-                        f"{self._distance:.3f}"
+                        f"{rounded}"
                     )
             else:
                 return f"({','.join(child_strings)})"
@@ -133,6 +137,48 @@ class TreeNode:
         leaf_list: List[TreeNode] = []
         TreeNode._get_leaves(node=self, leaf_list=leaf_list)
         return leaf_list
+    
+    def _create_path_to_root(node: TreeNode):
+        path: List[TreeNode] = []
+        current_node: Optional[TreeNode] = node
+        while current_node is not None:
+            path.append(current_node)
+            current_node = current_node._parent
+        return path
+    
+    def lowest_common_ancestor(self, node: TreeNode):
+        lca: Optional[TreeNode] = None
+        self_path = TreeNode._create_path_to_root(self)
+        other_path = TreeNode._create_path_to_root(node)
+        for i in range(-1, -min(len(self_path), len(other_path)) - 1, -1):
+            if self_path[i] is other_path[i]:
+                lca = self_path[i]
+            else:
+                break
+        return lca
+    
+    def distance_to(self, node: TreeNode, topological = False):
+        distance = 0.0
+        current_node: Optional[TreeNode] = None
+        lca = self.lowest_common_ancestor(node)
+
+        if lca is None:
+            raise ValueError("The nodes do not have a common ancestor")
+        current_node = self
+        while current_node is not lca:
+            if topological: distance += 1.0
+            else: distance += current_node._distance
+
+            current_node = current_node._parent
+        
+        current_node = node
+        while current_node is not lca:
+            if topological: distance += 1.0
+            else: distance += current_node._distance
+
+            current_node = current_node._parent
+        
+        return distance
     
 class Tree:
     _root: TreeNode
@@ -153,10 +199,25 @@ class Tree:
                 raise ValueError("The tree's indices are out of range")
             self._leaves[index] = leaves_unsorted[i]
 
+    @property
+    def root(self):
+        return self._root
+    
+    @property
+    def leaves(self):
+        return self._leaves
 
-child1 = TreeNode(children=None, distances=None, index=0)
-child2 = TreeNode(children=None, distances=None, index=1)
-treeNode = TreeNode([child1, child2], distances=[2.0, 2.0], index=None)
-
-tree = Tree(root=treeNode)
-print(tree._root)
+    def to_newick(self, labels: Optional[List[str]] = None, include_distance = True, round_distance: Optional[int] = None):
+        return self._root.to_newick(labels, include_distance, round_distance) + ";"
+    
+    def __str__(self):
+        return self.to_newick()
+    
+    def __len__(self):
+        return len(self._leaves)
+    
+    def __eq__(self, item: Tree):
+        return self._root == item._root
+    
+    def get_distance(self, index1, index2, topological = False):
+        return self._leaves[index1].distance_to(self._leaves[index2], topological)

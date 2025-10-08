@@ -8,3 +8,8 @@ however, when I tried to create the class TreeException such that it was a subcl
 ## Parametrize f string's precision for float numbers
 
 In TreeNode's class, the **str** function takes a round distance parameter, to specify how many positions after the decimal point should be included in the string, however, codon does not seem to support writing f"{self.\_distance:.{<variable>}f}", so instead I hardcoded the arbitrary value of 3 here.
+
+## numpy load text
+
+The following line did not work for me, so I instead had to read the data file myself.
+distances = np.loadtxt("week3/data/distances.txt", dtype=float)
