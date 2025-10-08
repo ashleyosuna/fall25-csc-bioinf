@@ -1,25 +1,6 @@
 from typing import Optional, List
 import numpy as np
 
-# class Tree:
-#     _root: TreeNode
-#     _leaves: List[TreeNode]
-
-#     def __init__(self, root: TreeNode):
-#         root.as_root()
-#         self._root = root
-
-#         leaves_unsorted = self._root.get_leaves()
-#         leaf_count = len(leaves_unsorted)
-
-#         indices = np.array([leaf.index for leaf in leaves_unsorted])
-#         self._leaves = [None] * leaf_count
-#         for i in range(len(indices)):
-#             index = indices[i]
-#             if index >= leaf_count or index < 0:
-#                 raise ValueError("The tree's indices are out of range")
-#             self._leaves[index] = leaves_unsorted[i]
-
 class TreeNode:
     _is_root: bool
     _distance: float
