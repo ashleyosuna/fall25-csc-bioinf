@@ -1,0 +1,10 @@
+# GOTCHAS
+
+## Defining Custom Exception Types
+
+When re-writing the TreeNode class into Codon, in the original code, custom exceptions called TreeException are raised in certain cases,
+however, when I tried to create the class TreeException such that it was a subclass of the Exception class, the program would not compile. To work around this, I switched these exceptions to ValueError exceptions.
+
+## Parametrize f string's precision for float numbers
+
+In TreeNode's class, the **str** function takes a round distance parameter, to specify how many positions after the decimal point should be included in the string, however, codon does not seem to support writing f"{self.\_distance:.{<variable>}f}", so instead I hardcoded the arbitrary value of 3 here.
