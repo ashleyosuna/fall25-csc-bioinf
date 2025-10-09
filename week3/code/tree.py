@@ -68,8 +68,24 @@ class TreeNode:
 
     def __eq__(self, item: TreeNode):
         if self._distance != item._distance: return False
-        elif self._index != -1 and self._index != item._index: return False
-        elif frozenset(self._children) != frozenset(item._children): return False
+        elif self._index != -1:
+            if self._index != item._index: return False
+
+        # if they both have children
+        if (self._children and item._children):
+            # if they don't have the same amount of children, then not equal
+            if (len(self._children) != len(item._children)): return False
+
+            found = 0
+            for i in range(len(self._children)):
+                for j in range(len(item._children)):
+                    if self._children[i] == item._children[j]: found += 1
+            
+            # if not all of self's children were found in item's children
+            if found != len(self._children): return False
+        
+        # if only one of them has children
+        elif (self._children or item._children): return False
         return True
     
     def is_leaf(self):
@@ -180,6 +196,121 @@ class TreeNode:
         
         return distance
     
+    @staticmethod
+    def from_newick(newick: str, labels: Optional[List[str]] = None):
+        subnewick_start_i = -1
+        subnewick_stop_i = -1
+        level = 0
+        comma_pos: List[int] = []
+        # children = List[TreeNode] = []
+        # distances = List[float] = []
+        pos = -1
+        next_pos = -1
+
+        newick = "".join(newick.split())
+        for i in range(len(newick)):
+            if newick[i] == "(":
+                subnewick_start_i = i
+                break
+            if newick[i] == "(":
+                raise ValueError("Bracket closed before it was opened")
+        
+        for i in reversed(range(len(newick))):
+            if newick[i] == ")":
+                subnewick_stop_i = i + 1
+                break
+            if newick[i] == "(":
+                raise ValueError("Bracket was opened but not closed")
+            
+        if subnewick_start_i == -1 and subnewick_stop_i == -1:
+            # No brackets -> no sub-newwick -> Leaf node
+            label_and_distance = newick
+            try:
+                label, distance_ = label_and_distance.split(":")
+                distance = float(distance_)
+            except ValueError:
+                # No colon -> No distance is provided
+                distance = 0
+                label = label_and_distance
+            index = int(label) if labels is None else labels.index(label)
+            return TreeNode(index=index), distance
+        
+        else:
+            # Intermediate node
+            if subnewick_stop_i == len(newick):
+                # Node with neither distance nor label
+                label = None
+                distance = 0
+            else:
+                label_and_distance = newick[subnewick_stop_i:]
+                try:
+                    label, distance_ = label_and_distance.split(":")
+                    distance = float(distance_)
+                except ValueError:
+                    # No colon -> No distance is provided
+                    distance = 0
+                    label = label_and_distance
+                # Label of intermediate nodes is discarded 
+                distance = float(distance)
+            
+            subnewick = newick[subnewick_start_i+1 : subnewick_stop_i-1]
+            if len(subnewick) == 0:
+                raise ValueError(
+                    "Intermediate node must at least have one child"
+                )
+            # Parse childs
+            # Split subnewick at ',' if ',' is at current level
+            # (not in a subsubnewick)
+            comma_pos = []
+            for i, char in enumerate(subnewick):
+                if char == "(":
+                    level += 1
+                elif char == ")":
+                    level -= 1
+                elif char == ",":
+                    if level == 0:
+                        comma_pos.append(i)
+                if level < 0:
+                    raise ValueError(
+                        "Bracket closed before it was opened"
+                    )
+        
+            children = []
+            distances = []
+            # Recursive tree construction
+            for i, pos in enumerate(comma_pos):
+                if i == 0:
+                    # (A,B),(C,D),(E,F)
+                    # -----
+                    child, dist = TreeNode.from_newick(
+                        subnewick[:pos], labels=labels
+                    )
+                else:
+                    # (A,B),(C,D),(E,F)
+                    #       -----
+                    prev_pos = comma_pos[i-1]
+                    child, dist = TreeNode.from_newick(
+                        subnewick[prev_pos+1 : pos], labels=labels
+                    )
+                children.append(child)
+                distances.append(dist)
+            # Node after last comma
+            # (A,B),(C,D),(E,F)
+            #             -----
+            if len(comma_pos) != 0:
+                child, dist = TreeNode.from_newick(
+                    subnewick[comma_pos[-1]+1:], labels=labels
+                )
+            else:
+                # Single child node:
+                child, dist = TreeNode.from_newick(
+                    subnewick, labels=labels
+                )
+            children.append(child)
+            distances.append(dist)
+            return TreeNode(children, distances), distance
+
+    
 class Tree:
     _root: TreeNode
     _leaves: List[Optional[TreeNode]]
@@ -221,3 +352,14 @@ class Tree:
     
     def get_distance(self, index1, index2, topological = False):
         return self._leaves[index1].distance_to(self._leaves[index2], topological)
+    
+    @staticmethod
+    def from_newick(newick: str, labels: Optional[List[str]] = None):
+        newick = newick.strip()
+        if len(newick) == 0:
+            raise ValueError("Newick string is empty")
+        # Remove terminal colon as required by 'TreeNode.from_newick()'
+        if newick[-1] == ";":
+            newick = newick[:-1]
+        root, distance = TreeNode.from_newick(newick, labels)
+        return Tree(root)

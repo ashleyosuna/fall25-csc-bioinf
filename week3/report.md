@@ -13,3 +13,5 @@ In TreeNode's class, the **str** function takes a round distance parameter, to s
 
 The following line did not work for me, so I instead had to read the data file myself.
 distances = np.loadtxt("week3/data/distances.txt", dtype=float)
+
+## using frozenset in **eq** function
