@@ -2,19 +2,18 @@ import numpy as np
 import unittest
 import biotite.sequence.phylo as phylo
 
-distances = []
+# distances = []
 
-with open("week3/data/distances.txt") as f:
-    for row in f:
-        row = row.strip()
-        _row = []
-        cols = row.split()
-        for col in cols:
-            _row.append(float(col))
-        distances.append(_row)
-
+# with open("week3/data/distances.txt") as f:
+#     for row in f:
+#         row = row.strip()
+#         _row = []
+#         cols = row.split()
+#         for col in cols:
+#             _row.append(float(col))
+#         distances.append(_row)
+distances = np.loadtxt("week3/data/distances.txt", dtype=int)
 upgma_newick = None
-
 with open("week3/data/newick_upgma.txt") as f:
     upgma_newick = f.read().strip()
 
