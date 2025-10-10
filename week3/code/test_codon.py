@@ -1,18 +1,55 @@
+from typing import Tuple, NoneType
 from tree import Tree, TreeNode
 import numpy as np
 from upgma import upgma
 from nj import neighbor_joining
+import time
+import unittest
 
-def test_distances(tree):
+# TEST UTILITIES
+
+tests: list[tuple[str, function[Tuple, NoneType]]] = []
+
+def test(name: str):
+    def decorator(fn: function[Tuple, NoneType]) -> function[Tuple, NoneType]:
+        tests.append((name, fn))
+        return fn
+    return decorator
+
+distances = []
+
+with open("week3/data/distances.txt") as f:
+    for row in f:
+        row = row.strip()
+        _row = []
+        cols = row.split()
+        for col in cols:
+            _row.append(float(col))
+        distances.append(_row)
+
+upgma_newick = None
+
+with open("week3/data/newick_upgma.txt") as f:
+    upgma_newick = f.read().strip()
+
+tree = upgma(np.array(distances))
+TEST = unittest.TestCase()
+
+# END OF TEST UTILITIES
+
+# TEST CASES
+@test("test_distances")
+def test_distances():
     # Tree is created via UPGMA
     # -> The distances to root should be equal for all leaf nodes
     dist = tree.root.distance_to(tree.leaves[0])
     for leaf in tree.leaves:
-        assert leaf.distance_to(tree.root) == dist
+        TEST.assertEqual(leaf.distance_to(tree.root), dist)
     # Example topological distances
-    assert tree.get_distance(0, 19, True) == 9
-    assert tree.get_distance(4, 2, True) == 10
+    TEST.assertEqual(tree.get_distance(0, 19, True), 9)
+    TEST.assertEqual(tree.get_distance(4, 2, True), 10)
 
+@test("test_neighbor_joining")
 def test_neighbor_joining():
     """
     Compare the results of `neighbor_join()` with a known tree.
@@ -56,9 +93,10 @@ def test_neighbor_joining():
     )
 
     test_tree = neighbor_joining(dist)
-    assert test_tree == ref_tree
+    TEST.assertEqual(test_tree, ref_tree)
 
-def test_upgma(tree, upgma_newick):
+@test("test_upgma")
+def test_upgma():
     """
     Compare the results of `upgma()` with DendroUPGMA.
     """
@@ -68,31 +106,25 @@ def test_upgma(tree, upgma_newick):
     for i in range(len(tree)):
         for j in range(len(tree)):
             # Check for equal distances and equal topologies
-            # assert tree.get_distance(i, j) == pytest.approx(
-            #     ref_tree.get_distance(i, j), abs=1e-3
-            # )
-            assert np.isclose(tree.get_distance(i, j), ref_tree.get_distance(i, j), atol=1e-3)
-            assert tree.get_distance(i, j, topological=True) == ref_tree.get_distance(
-                i, j, topological=True
-            )
+            TEST.assertAlmostEqual(tree.get_distance(i, j), ref_tree.get_distance(i, j), delta=1e-3)
+            TEST.assertEqual(tree.get_distance(i, j, topological=True), ref_tree.get_distance(i, j, topological=True))
+# END TEST CASES
 
-distances = []
+def testRunner():
+    passed = total = 0
+    start = time.perf_counter()
+    for name, test in tests:
+        try:
+            test()
+            print(f"{name} ... ok")
+            passed += 1
+        except AssertionError:
+            print(f"{name} ... not ok")
+        except:
+            print(f"{name} ... ERROR")
+        total += 1
+    end = time.perf_counter()
+    elapsed_time = end - start
+    print(f"\n\n{passed} out of {total} tests passed; tests ran in {elapsed_time:.6f} seconds\n")
 
-with open("week3/data/distances.txt") as f:
-    for row in f:
-        row = row.strip()
-        _row = []
-        cols = row.split()
-        for col in cols:
-            _row.append(float(col))
-        distances.append(_row)
-
-upgma_newick = None
-
-with open("week3/data/newick_upgma.txt") as f:
-    upgma_newick = f.read().strip()
-
-tree = upgma(np.array(distances))
-test_distances(tree)
-test_upgma(tree, upgma_newick)
-test_neighbor_joining()
+testRunner()
