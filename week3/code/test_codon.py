@@ -111,20 +111,10 @@ def test_upgma():
 # END TEST CASES
 
 def testRunner():
-    passed = total = 0
+    # passed = total = 0
     start = time.perf_counter()
     for name, test in tests:
-        try:
-            test()
-            # print(f"{name} ... ok")
-            passed += 1
-        except AssertionError:
-            # print(f"{name} ... not ok")
-            pass
-        except:
-            # print(f"{name} ... ERROR")
-            pass
-        total += 1
+        test()
     end = time.perf_counter()
     elapsed_time = (end - start) * 1000
     print(f"{round(elapsed_time, 4)} ms")

@@ -18,8 +18,7 @@ class Test(unittest.TestCase):
         for leaf in tree.leaves:
             self.assertEqual(leaf.distance_to(tree.root), dist)
         # Example topological distances
-        self.assertEqual(tree.get_distance(0, 19, True), 10)
-        # self.assertEqual(tree.get_distance(0, 19, True), 9)
+        self.assertEqual(tree.get_distance(0, 19, True), 9)
         self.assertEqual(tree.get_distance(4, 2, True), 10)
 
     def test_neighbor_joining(self):
