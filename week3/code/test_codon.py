@@ -127,6 +127,6 @@ def testRunner():
         total += 1
     end = time.perf_counter()
     elapsed_time = (end - start) * 1000
-    print(f"{elapsed_time} ms")
+    print(f"{round(elapsed_time, 4)} ms")
 
 testRunner()

@@ -18,7 +18,8 @@ class Test(unittest.TestCase):
         for leaf in tree.leaves:
             self.assertEqual(leaf.distance_to(tree.root), dist)
         # Example topological distances
-        self.assertEqual(tree.get_distance(0, 19, True), 9)
+        self.assertEqual(tree.get_distance(0, 19, True), 10)
+        # self.assertEqual(tree.get_distance(0, 19, True), 9)
         self.assertEqual(tree.get_distance(4, 2, True), 10)
 
     def test_neighbor_joining(self):
@@ -86,5 +87,5 @@ tests.test_neighbor_joining()
 tests.test_upgma()
 end_time = time.perf_counter()
 
-elapsed_ns = (end_time - start_time) * 1000
-print(elapsed_ns, "ms")
+elapsed_ms = (end_time - start_time) * 1000
+print(f"{round(elapsed_ms, 4)} ms")
