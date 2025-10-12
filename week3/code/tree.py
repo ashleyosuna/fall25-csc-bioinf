@@ -119,7 +119,6 @@ class TreeNode:
                 if round_distance is None:
                     return f"{label}:{self._distance:.1f}"
                 else:
-                    # TODO ?
                     rounded = round(self._distance, round_distance)
                     return f"{label}:{rounded}"
             else:
@@ -133,7 +132,6 @@ class TreeNode:
                 if round_distance is None:
                     return f"({','.join(child_strings)}):{self._distance:.1f}"
                 else:
-                    # TODO: fix not specifying number of decimal places in f string?
                     rounded = round(self._distance, round_distance)
                     return (
                         f"({','.join(child_strings)}):"

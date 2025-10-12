@@ -15,3 +15,9 @@ The following line did not work for me, so I instead had to read the data file m
 distances = np.loadtxt("week3/data/distances.txt", dtype=float)
 
 ## using frozenset in **eq** function
+
+Since Codon does not have frozenset, I tried using a regular set instead (and extending the class as suggested in Piazza), however, I kept getting errors and could not make it work; instead, I modified the code in **eq** to check if two nodes have the same number of children, and if all of their children are the same (regardless of order).
+
+## pytest not supported
+
+Since I believe pytest is not supported in Codon, I used unittest for both codon and python tests instead, but kept the same tests as indicated.
