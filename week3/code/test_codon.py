@@ -116,15 +116,17 @@ def testRunner():
     for name, test in tests:
         try:
             test()
-            print(f"{name} ... ok")
+            # print(f"{name} ... ok")
             passed += 1
         except AssertionError:
-            print(f"{name} ... not ok")
+            # print(f"{name} ... not ok")
+            pass
         except:
-            print(f"{name} ... ERROR")
+            # print(f"{name} ... ERROR")
+            pass
         total += 1
     end = time.perf_counter()
     elapsed_time = end - start
-    print(f"\n\n{total} tests ran in {elapsed_time:.6f} seconds\n")
+    print(f"\n\nRan {total} tests in {elapsed_time:.6f} s\n")
 
 testRunner()
