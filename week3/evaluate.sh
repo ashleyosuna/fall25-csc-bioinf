@@ -15,8 +15,8 @@ end_time=$(date +%s%3N)
 duration_ms=$((end_time - start_time))
 printf "%-10s %-4d\n" "codon" ${duration_ms}
 
-echo "----------------------------"
-echo -e "\nRunning python tests\n"
+# echo "----------------------------"
+# echo -e "\nRunning python tests\n"
 
 start=$(date +%s%3N)
 tmp=$(python3 week3/code/test_python.py)
