@@ -73,22 +73,22 @@ def test_neighbor_joining():
                                 TreeNode(index=0),
                                 TreeNode(index=1),
                             ],
-                            [1.0, 4.0],
+                            [1, 4],
                         ),
                         TreeNode(index=2),
                     ],
-                    [1.0, 2.0],
+                    [1, 2],
                 ),
                 TreeNode(
                     [
                         TreeNode(index=3),
                         TreeNode(index=4),
                     ],
-                    [3.0, 2.0],
+                    [3, 2],
                 ),
                 TreeNode(index=5),
             ],
-            [1.0, 1.0, 5.0],
+            [1, 1, 5],
         )
     )
 

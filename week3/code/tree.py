@@ -8,9 +8,9 @@ class TreeNode:
     _index: int
     _children: Optional[List[TreeNode]]
 
-    def __init__(self, children: Optional[List[TreeNode]]=None, distances: Optional[List[float]]=None, index=None):
+    def __init__(self, children = None, distances = None, index=None):
         self._is_root = False
-        self._distance = 0
+        self._distance = 0.0
         self._parent = None
 
         if index is None:
@@ -31,8 +31,10 @@ class TreeNode:
                             "Two child nodes cannot be the same object"
                         )
             self._index = -1
-            self._children = children
-            for child, distance in zip(children, distances):
+            self._children = [child for child in children]
+            distances_ = [float(dist) for dist in distances]
+
+            for child, distance in zip(children, distances_):
                 child._set_parent(parent=self, distance=distance)
         elif index < 0:
             raise ValueError("Index cannot be negative")
