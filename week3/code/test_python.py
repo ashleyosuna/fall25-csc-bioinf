@@ -1,7 +1,7 @@
 import numpy as np
 import unittest
 import biotite.sequence.phylo as phylo
-import os
+import time
 
 distances = np.loadtxt("week3/data/distances.txt", dtype=int)
 upgma_newick = None
@@ -70,7 +70,6 @@ class Test(unittest.TestCase):
         """
         Compare the results of `upgma()` with DendroUPGMA.
         """
-        print('in test upgma')
         ref_tree = phylo.Tree.from_newick(upgma_newick)
         # Cannot apply direct tree equality assertion because the distance
         # might not be exactly equal due to floating point rounding errors
@@ -80,9 +79,12 @@ class Test(unittest.TestCase):
                 self.assertAlmostEqual(tree.get_distance(i, j), ref_tree.get_distance(i, j), delta=1e-3)
                 self.assertEqual(tree.get_distance(i, j, topological=True), ref_tree.get_distance(i, j, topological=True))
 
+start_time_ns = time.perf_counter_ns()
 tests = Test()
-# runner = unittest.TextTestRunner(verbosity=0)
-# unittest.main(testRunner=runner)
 tests.test_distances()
 tests.test_neighbor_joining()
 tests.test_upgma()
+end_time_ns = time.perf_counter_ns()
+
+elapsed_ns = (end_time_ns - start_time_ns) // 1_000_000
+print(elapsed_ns, "ms")
