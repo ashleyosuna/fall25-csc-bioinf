@@ -8,7 +8,7 @@ echo "----------------------------"
 
 start=$(date +%s%3N)
 # echo -e "\nRunning codon tests\n"
-tmp=codon run -release week3/code/test_codon.py
+tmp=$(codon run -release week3/code/test_codon.py)
 
 end_time=$(date +%s%3N)
 
