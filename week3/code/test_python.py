@@ -70,6 +70,7 @@ class Test(unittest.TestCase):
         """
         Compare the results of `upgma()` with DendroUPGMA.
         """
+        print('in test upgma')
         ref_tree = phylo.Tree.from_newick(upgma_newick)
         # Cannot apply direct tree equality assertion because the distance
         # might not be exactly equal due to floating point rounding errors
