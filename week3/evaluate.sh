@@ -5,9 +5,8 @@ echo "week3"
 
 printf "%-10s %-10s\n" "Language" "Runtime"
 echo "----------------------------"
-echo "codon "
-codon run -release week3/code/test_codon.py
+time=$(codon run -release week3/code/test_codon.py)
+printf "%-10s %-10s\n" "Codon" ${time}
 
-echo "----------------------------"
-echo "python "
-python3 week3/code/test_python.py
+time=$(python3 week3/code/test_python.py)
+printf "%-10s %-10s\n" "Python" ${time}

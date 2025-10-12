@@ -126,7 +126,7 @@ def testRunner():
             pass
         total += 1
     end = time.perf_counter()
-    elapsed_time = end - start
-    print(f"\n\nRan {total} tests in {elapsed_time:.6f} s\n")
+    elapsed_time = (end - start) * 1000
+    print(f"{elapsed_time} ms")
 
 testRunner()
