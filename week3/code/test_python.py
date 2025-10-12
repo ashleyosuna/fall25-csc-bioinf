@@ -80,9 +80,5 @@ class Test(unittest.TestCase):
                 self.assertEqual(tree.get_distance(i, j, topological=True), ref_tree.get_distance(i, j, topological=True))
 
 tests = Test()
-# runner = unittest.TextTestRunner(verbosity=0)
-# unittest.main(testRunner=runner)
-
-with open(os.devnull, 'w') as null_stream:
-    runner = unittest.TextTestRunner(verbosity=0)
-    unittest.main(testRunner=runner)
+runner = unittest.TextTestRunner(verbosity=0)
+unittest.main(testRunner=runner)
