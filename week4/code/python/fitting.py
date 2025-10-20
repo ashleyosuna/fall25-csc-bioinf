@@ -1,11 +1,15 @@
 import numpy as np
 
-def local_alignment(u, v, match_score = 3, mismatch_score = -3, gap_score = -2):
-    # CONSTRUCT MATRIX
+def fitting(u, v, match_score = 3, mismatch_score = -3, gap_score = -2):
+    # assuming |v| < |u|
     n, m = len(u) + 1, len(v) + 1
-    network = np.ndarray((n, m))
 
-    # keep track of where best local alignment ends so we can backtrack later
+    network = np.array([[0] * m] * n)
+    # ignore gaps at the left of v -> first column stays as 0s
+    # initialize first row as usual
+    for i in range(m): network[0][i] = gap_score * i
+
+    # ignore gaps at the right of v -> keep track of highest score
     max_score = 0
     max_score_position = (0, 0)
 
@@ -22,30 +26,34 @@ def local_alignment(u, v, match_score = 3, mismatch_score = -3, gap_score = -2):
             if network[i][j] > max_score:
                 max_score = network[i][j]
                 max_score_position = (i, j)
-
-    # BACKTRACK TO CONSTRUCT ALIGNMENT
-    alignment = [[], []]
+    
+    print(network)
+    
+    # backtrack from highest score
+    alignment = [[_ for _ in u], ["-"] * (n - 1)]
     i, j = max_score_position
+    k = j + 1
 
     while i > 0 or j > 0:
         if network[i][j] == network[i-1][j-1] + mismatch_score or \
             u[i-1] == v[j-1]:
             i -= 1
             j -= 1
-            alignment[0].append(u[i])
-            alignment[1].append(v[j])
+            alignment[1][k] = v[j]
         elif network[i][j] == network[i-1][j] + gap_score:
             i -= 1
-            alignment[0].append(u[i])
-            alignment[1].append('-')
         elif network[i][j] == network[i][j-1] + gap_score:
             j -= 1
-            alignment[0].append("-")
-            alignment[1].append(v[j])
+            alignment[1][k] = v[j]
         # current position is where local alignment starts
         else:
             break
-        
-    alignment[0].reverse()
-    alignment[1].reverse()
+        k -= 1
+
+    # if v does not fit entirely into u (i.e., alignment start pos + |v| > len|u|)
+    # then add gaps at the end of u
+    if max_score_position[1] < m - 1:
+        alignment[0] += ["-"] * (m - 1 - max_score_position[1])
+        alignment[1] += [_ for _ in v[max_score_position[1]:]]
+
     return alignment

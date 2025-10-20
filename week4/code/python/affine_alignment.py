@@ -62,6 +62,3 @@ def affine_alignment(u, v, match_score = 3, mismatch_score = -3, gap_init_score 
     alignment[0].reverse()
     alignment[1].reverse()
     return alignment
-
-al = affine_alignment("GATCCAG", "GACAG")
-print(al[0], al[1], sep="\n")

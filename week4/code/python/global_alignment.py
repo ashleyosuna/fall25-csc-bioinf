@@ -6,10 +6,10 @@ def global_alignment(u, v, match_score = 3, mismatch_score = -3, gap_score = -2)
     network = np.ndarray((n, m))
 
     # fill first row
-    for i in range(n): network[i][0] = -2 * i
+    for i in range(n): network[i][0] = gap_score * i
 
     # fill first column
-    for j in range(m): network[0][j] = -2 * j
+    for j in range(m): network[0][j] = gap_score * j
 
     # fill matrix row by row
     for i in range(1, n):
@@ -46,6 +46,3 @@ def global_alignment(u, v, match_score = 3, mismatch_score = -3, gap_score = -2)
     alignment[0].reverse()
     alignment[1].reverse()
     return alignment
-
-al = global_alignment("TACGAA", "TATGA")
-print(al[0], al[1], sep="\n")
