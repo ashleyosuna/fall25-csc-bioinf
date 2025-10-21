@@ -1,7 +1,10 @@
 import numpy as np
 
 def fitting(u, v, match_score = 3, mismatch_score = -3, gap_score = -2):
-    # assuming |v| < |u|
+    u = u.upper()
+    v = v.upper()
+    # make it so |v| < |u|
+    if len(u) < len(v): u, v = v, u
     n, m = len(u) + 1, len(v) + 1
 
     network = np.array([[0] * m] * n)
@@ -27,28 +30,24 @@ def fitting(u, v, match_score = 3, mismatch_score = -3, gap_score = -2):
                 max_score = network[i][j]
                 max_score_position = (i, j)
     
-    print(network)
-    
     # backtrack from highest score
-    alignment = [[_ for _ in u], ["-"] * (n - 1)]
+    alignment = [list(u), ["-"] * len(u)]
     i, j = max_score_position
-    k = j + 1
 
     while i > 0 or j > 0:
         if network[i][j] == network[i-1][j-1] + mismatch_score or \
             u[i-1] == v[j-1]:
             i -= 1
             j -= 1
-            alignment[1][k] = v[j]
+            alignment[1][i] = v[j]
         elif network[i][j] == network[i-1][j] + gap_score:
             i -= 1
         elif network[i][j] == network[i][j-1] + gap_score:
             j -= 1
-            alignment[1][k] = v[j]
-        # current position is where local alignment starts
+            alignment[1][i] = v[j]
+        # current position is where alignment starts
         else:
             break
-        k -= 1
 
     # if v does not fit entirely into u (i.e., alignment start pos + |v| > len|u|)
     # then add gaps at the end of u
