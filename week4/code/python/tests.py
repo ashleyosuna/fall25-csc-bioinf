@@ -36,16 +36,19 @@ for i in range(len(sequencesA) - 1):
     start = time.time()
     al = local_alignment(seqA, seqB)
     end = time.time()
+    elapsed = (end - start) * 1000
     print(f"{'local-' + nameA:<15} {'python':<15} {elapsed:.4f} ms")
 
     start = time.time()
     al = affine_alignment(seqA, seqB)
     end = time.time()
+    elapsed = (end - start) * 1000
     print(f"{'affine-' + nameA:<15} {'python':<15} {elapsed:.4f} ms")
 
     start = time.time()
     al = fitting(seqA, seqB)
     end = time.time()
+    elapsed = (end - start) * 1000
     print(f"{'fitting-' + nameA:<15} {'python':<15} {elapsed:.4f} ms")
 
     # print("".join(al[0]), ''.join(al[1]), sep="\n")
