@@ -2,16 +2,18 @@ import numpy as np
 
 MIN = float('-inf')
 
-def affine_alignment(u, v, match_score = 3, mismatch_score = -3, gap_init_score = -5, gap_extension_score = -3):
+def affine_alignment(u, v, match_score = 3, mismatch_score = -3, gap_init_score = -5, gap_extension_score = -1):
+    u = u.upper()
+    v = v.upper()
     n, m = len(u) + 1, len(v) + 1
 
-    lower = np.ndarray((n, m))
-    middle = np.ndarray((n, m))
-    upper = np.ndarray((n, m))
+    lower = np.full((n, m), MIN)
+    middle = np.full((n, m), 0)
+    upper = np.full((n, m), MIN)
 
-    lower[0][0] = MIN
+    lower[0][0] = 0
     middle[0][0] = 0
-    upper[0][0] = MIN
+    upper[0][0] = 0
     # initialize first column
     for i in range(1, n): lower[i][0] = (gap_init_score if i == 1 else lower[i-1][0] + gap_extension_score)
 
@@ -42,21 +44,24 @@ def affine_alignment(u, v, match_score = 3, mismatch_score = -3, gap_init_score 
     i, j = n-1, m-1
     alignment = [[], []]
 
+    # print(lower, middle, upper, sep="\n")
+
     while i > 0 or j > 0:
-        if middle[i][j] == middle[i-1][j-1] + mismatch_score \
-            or u[i-1] == v[j-1]:
-            i -= 1
-            j -= 1
-            alignment[0].append(u[i])
-            alignment[1].append(v[j])
         # vertical gap
-        elif middle[i][j] == lower[i][j]:
+        if (i > 0 and j <= 0) or middle[i][j] == lower[i][j]:
             i -= 1
             alignment[0].append(u[i])
             alignment[1].append("-")
-        else:
+        # horizontal gap
+        elif (j > 0 and i <= 0) or middle[i][j] == upper[i][j]:
             j -= 1
             alignment[0].append("-")
+            alignment[1].append(v[j])
+        # match/mismatch
+        else:
+            i -= 1
+            j -= 1
+            alignment[0].append(u[i])
             alignment[1].append(v[j])
     
     alignment[0].reverse()
