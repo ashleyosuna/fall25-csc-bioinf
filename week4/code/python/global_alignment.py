@@ -1,6 +1,8 @@
 import numpy as np
 
 def global_alignment(u, v, match_score = 3, mismatch_score = -3, gap_score = -2):
+    u = u.upper()
+    v = v.upper()
     # CONSTRUCT MATRIX
     n, m = len(u) + 1, len(v) + 1
     network = np.ndarray((n, m))
@@ -25,22 +27,21 @@ def global_alignment(u, v, match_score = 3, mismatch_score = -3, gap_score = -2)
     i, j = n - 1, m - 1
 
     while i > 0 or j > 0:
-        # if match or mismatch, 'move' along both sequences
-        if network[i][j] == network[i-1][j-1] + mismatch_score or \
-            u[i-1] == v[j-1]:
-            i -= 1
-            j -= 1
-            alignment[0].append(u[i])
-            alignment[1].append(v[j])
         # vertical gap, 'move' along u
-        elif network[i][j] == network[i-1][j] + gap_score:
+        if network[i][j] == network[i-1][j] + gap_score:
             i -= 1
             alignment[0].append(u[i])
             alignment[1].append('-')
         # horizontal gap, 'move' along v
-        else:
+        elif network[i][j] == network[i][j-1] + gap_score:
             j -= 1
             alignment[0].append("-")
+            alignment[1].append(v[j])
+        # if match or mismatch, 'move' along both sequences
+        else:
+            i -= 1
+            j -= 1
+            alignment[0].append(u[i])
             alignment[1].append(v[j])
         
     alignment[0].reverse()
