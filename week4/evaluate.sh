@@ -10,4 +10,4 @@ echo "----------------------------"
 
 # time=$(python3 week3/code/test_python.py)
 # printf "%-10s %-10s %-2s\n" "Python" ${time}
-python3 wee4/code/python/tests.py
+python3 week4/code/python/tests.py
