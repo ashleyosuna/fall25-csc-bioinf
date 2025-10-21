@@ -3,6 +3,11 @@ from local_alignment import local_alignment
 from affine_alignment import affine_alignment
 from fitting_alignment import fitting
 import time
+import sys
+
+arg = sys.argv
+
+lang = arg[1]
 
 def read_fasta(file):
     sequences = []
@@ -23,7 +28,7 @@ def read_fasta(file):
 sequencesA = read_fasta('week4/code/data/q1.fa') + read_fasta('week4/code/data/MT-human.fa')
 sequencesB = read_fasta('week4/code/data/t1.fa') + read_fasta('week4/code/data/MT-orang.fa')
 
-for i in range(len(sequencesA)):
+for i in range(len(sequencesA) - 1):
     (nameA, seqA), (nameB, seqB) = sequencesA[i], sequencesB[i]
 
     start = time.time()
@@ -33,21 +38,21 @@ for i in range(len(sequencesA)):
     end = time.time()
 
     elapsed = (end - start) * 1000
-    print(f"{'global-' + nameA:<15} {'python':<15} {elapsed:.4f} ms")
+    print(f"{'global-' + nameA:<15} {lang:<15} {elapsed:.4f} ms")
 
     start = time.time()
     al = local_alignment(seqA, seqB)
     # print(''.join(al[0]), ''.join(al[1]), sep='\n')
     end = time.time()
     elapsed = (end - start) * 1000
-    print(f"{'local-' + nameA:<15} {'python':<15} {elapsed:.4f} ms")
+    print(f"{'local-' + nameA:<15} {lang:<15} {elapsed:.4f} ms")
 
     start = time.time()
     al = affine_alignment(seqA, seqB)
     # print(''.join(al[0]), ''.join(al[1]), sep='\n')
     end = time.time()
     elapsed = (end - start) * 1000
-    print(f"{'affine-' + nameA:<15} {'python':<15} {elapsed:.4f} ms")
+    print(f"{'affine-' + nameA:<15} {lang:<15} {elapsed:.4f} ms")
 
     start = time.time()
     # print(seqA, seqB)
@@ -56,4 +61,4 @@ for i in range(len(sequencesA)):
     # print(''.join(al[0]), ''.join(al[1]), sep='\n')
     end = time.time()
     elapsed = (end - start) * 1000
-    print(f"{'fitting-' + nameA:<15} {'python':<15} {elapsed:.4f} ms")
+    print(f"{'fitting-' + nameA:<15} {lang:<15} {elapsed:.4f} ms")

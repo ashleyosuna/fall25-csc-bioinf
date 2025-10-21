@@ -52,5 +52,5 @@ def local_alignment(u, v, match_score = 3, mismatch_score = -3, gap_score = -2):
     alignment[1].reverse()
     return alignment
 
-al = local_alignment("ACGTGC", "ACGT")
-print(al)
+# al = local_alignment("ACGTGC", "ACGT")
+# print(al)

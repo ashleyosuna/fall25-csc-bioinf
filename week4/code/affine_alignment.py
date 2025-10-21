@@ -68,5 +68,5 @@ def affine_alignment(u, v, match_score = 3, mismatch_score = -3, gap_init_score 
     alignment[1].reverse()
     return alignment
 
-al = affine_alignment("ACGTGC", "ACGT")
-print(al)
+# al = affine_alignment("ACGTGC", "ACGT")
+# print(al)
