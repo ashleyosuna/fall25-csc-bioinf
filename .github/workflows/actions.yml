@@ -35,5 +35,7 @@ jobs:
       #   run: |
       #     export CODON_PYTHON=/opt/hostedtoolcache/Python/3.13.7/x64/lib/libpython3.13.so.1.0
       #     bash week2/evaluate.sh
-      - name: Week 3
-        run: bash week3/evaluate.sh
+      # - name: Week 3
+      #   run: bash week3/evaluate.sh
+      - name: Week 4
+        run: bash week4/evaluate.sh
