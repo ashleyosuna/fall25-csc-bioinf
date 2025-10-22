@@ -28,7 +28,7 @@ def read_fasta(file):
 sequencesA = read_fasta('week4/code/data/q1.fa') + read_fasta('week4/code/data/MT-human.fa')
 sequencesB = read_fasta('week4/code/data/t1.fa') + read_fasta('week4/code/data/MT-orang.fa')
 
-for i in range(len(sequencesA) - 1):
+for i in range(len(sequencesA)):
     (nameA, seqA), (nameB, seqB) = sequencesA[i], sequencesB[i]
 
     start = time.time()
