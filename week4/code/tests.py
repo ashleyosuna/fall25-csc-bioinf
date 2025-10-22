@@ -38,21 +38,21 @@ for i in range(len(sequencesA)):
     end = time.time()
 
     elapsed = (end - start) * 1000
-    print(f"{'global-' + nameA:<15} {lang:<15} {elapsed:.4f} ms")
+    print(f"{'global-' + nameA:<20} {lang:<15} {elapsed:.4f} ms")
 
     start = time.time()
     al = local_alignment(seqA, seqB)
     # print(''.join(al[0]), ''.join(al[1]), sep='\n')
     end = time.time()
     elapsed = (end - start) * 1000
-    print(f"{'local-' + nameA:<15} {lang:<15} {elapsed:.4f} ms")
+    print(f"{'local-' + nameA:<20} {lang:<15} {elapsed:.4f} ms")
 
     start = time.time()
     al = affine_alignment(seqA, seqB)
     # print(''.join(al[0]), ''.join(al[1]), sep='\n')
     end = time.time()
     elapsed = (end - start) * 1000
-    print(f"{'affine-' + nameA:<15} {lang:<15} {elapsed:.4f} ms")
+    print(f"{'affine-' + nameA:<20} {lang:<15} {elapsed:.4f} ms")
 
     start = time.time()
     # print(seqA, seqB)
@@ -61,4 +61,4 @@ for i in range(len(sequencesA)):
     # print(''.join(al[0]), ''.join(al[1]), sep='\n')
     end = time.time()
     elapsed = (end - start) * 1000
-    print(f"{'fitting-' + nameA:<15} {lang:<15} {elapsed:.4f} ms")
+    print(f"{'fitting-' + nameA:<20} {lang:<15} {elapsed:.4f} ms")
