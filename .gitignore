@@ -4,3 +4,7 @@ contig*.fasta
 *.json
 week1/tests/*.txt
 .DS_Store
+*.bam
+*.bai
+*.sam
+*.fa
