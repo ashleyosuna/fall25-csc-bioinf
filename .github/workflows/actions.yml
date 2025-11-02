@@ -31,12 +31,17 @@ jobs:
           echo "Found Python at: ${CODON_PYTHON}"
       - name: Install week5 command-line tools
         run: brew install minimap2 samtools bcftools
-      - name: Intsall hapcut2
+      # - name: Intsall hapcut2
+      #   run: |
+      #     mkdir -p ${HOME}/HapCUT2
+      #     git clone https://github.com/vibansal/HapCUT2.git ${HOME}/HapCUT2
+      #     cd ${HOME}/HapCUT2
+      #     bash install.sh
+      - name: Install hapcut2 via conda
+        uses: conda-incubator/setup-miniconda@v3
         run: |
-          mkdir -p ${HOME}/HapCUT2
-          git clone https://github.com/vibansal/HapCUT2.git ${HOME}/HapCUT2
-          cd ${HOME}/HapCUT2
-          bash install.sh
+          conda config --add channels conda-forge
+          conda install bioconda::hapcut2
       - name: Install jupyter
         run: pip install jupyter
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
