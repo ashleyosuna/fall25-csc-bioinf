@@ -60,8 +60,9 @@ jobs:
       #   run: bash week3/evaluate.sh
       # - name: Week 4
       #   run: bash week4/evaluate.sh
+      # jupyter execute week5/week5.ipynb --stdout
       - name: Week 5
         shell: bash -l {0}
         run: |
           conda activate test
-          jupyter execute week5/week5.ipynb --stdout
+          jupyter nbconvert --to notebook --execute week5/week5.ipynb --stdout
