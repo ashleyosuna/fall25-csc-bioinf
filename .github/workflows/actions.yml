@@ -39,6 +39,7 @@ jobs:
       #     bash install.sh
       - uses: conda-incubator/setup-miniconda@v3
       - name: Installing hapcut2
+        shell: bash -l {0}
         run: |
           conda config --add channels conda-forge
           conda install bioconda::hapcut2
@@ -59,4 +60,5 @@ jobs:
       # - name: Week 4
       #   run: bash week4/evaluate.sh
       - name: Week 5
+        shell: bash -l {0}
         run: jupyter execute week5/week5.ipynb
