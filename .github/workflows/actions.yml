@@ -34,8 +34,8 @@ jobs:
       - name: Intsall hapcut2
         run: |
           mkdir -p ${HOME}/.hapcut
-          git clone https://github.com/vibansal/HapCUT2.git ${HOME}/.hapcut
-          cd ${HOME}/.hapcut
+          cd -p ${HOME}/.hapcut
+          git clone https://github.com/vibansal/HapCUT2.git
           bash install.sh
       - name: Install jupyter
         run: pip install jupyter
