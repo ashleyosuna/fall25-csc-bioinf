@@ -28,7 +28,7 @@ jobs:
           export CODON_PYTHON=$(find_libpython)
           echo "Found Python at: ${CODON_PYTHON}"
       - name: Install week5 command-line tools
-          pip install minimap2 samtools bcftools
+        run: pip install minimap2 samtools bcftools
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       # - name: Week 1
