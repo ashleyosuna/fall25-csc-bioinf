@@ -64,4 +64,4 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate test
-          jupyter execute week5/week5.ipynb
+          jupyter execute week5/week5.ipynb --stdout
