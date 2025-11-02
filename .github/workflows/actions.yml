@@ -42,6 +42,8 @@ jobs:
         run: |
           conda config --add channels conda-forge
           conda install bioconda::hapcut2
+      - name: Test
+        run: which hapcut2
       - name: Install jupyter
         run: pip install jupyter
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
