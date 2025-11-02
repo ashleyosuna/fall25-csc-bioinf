@@ -43,6 +43,7 @@ jobs:
         run: |
           conda config --add channels conda-forge
           conda install bioconda::hapcut2
+          conda install -y papermill
       - name: Test
         shell: bash -l {0}
         run: which hapcut2
@@ -66,5 +67,4 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate test
-          conda install -y papermill
           papermill --log-output week5/week5.ipynb output.ipynb
