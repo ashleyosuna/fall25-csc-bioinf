@@ -67,4 +67,4 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate test
-          papermill --log-output week5/week5.ipynb output.ipynb
+          jupyter nbconvert --to notebook --execute week5/week5.ipynb --stdout
