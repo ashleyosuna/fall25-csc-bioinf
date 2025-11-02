@@ -44,6 +44,7 @@ jobs:
           conda config --add channels conda-forge
           conda install bioconda::hapcut2
       - name: Test
+        shell: bash -l {0}
         run: which hapcut2
       - name: Install jupyter
         run: pip install jupyter
