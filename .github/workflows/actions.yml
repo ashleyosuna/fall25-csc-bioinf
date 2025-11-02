@@ -33,9 +33,9 @@ jobs:
         run: brew install minimap2 samtools bcftools
       - name: Intsall hapcut2
         run: |
-          mkdir -p ${HOME}/.hapcut
-          cd ${HOME}/.hapcut
-          git clone https://github.com/vibansal/HapCUT2.git
+          mkdir -p ${HOME}/HapCUT2
+          git clone https://github.com/vibansal/HapCUT2.git ${HOME}/HapCUT2
+          cd ${HOME}/HapCUT2
           bash install.sh
       - name: Install jupyter
         run: pip install jupyter
