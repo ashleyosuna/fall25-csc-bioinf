@@ -37,8 +37,8 @@ jobs:
       #     git clone https://github.com/vibansal/HapCUT2.git ${HOME}/HapCUT2
       #     cd ${HOME}/HapCUT2
       #     bash install.sh
-      - name: Install hapcut2 via conda
-        uses: conda-incubator/setup-miniconda@v3
+      - uses: conda-incubator/setup-miniconda@v3
+      - name: Installing hapcut2
         run: |
           conda config --add channels conda-forge
           conda install bioconda::hapcut2
