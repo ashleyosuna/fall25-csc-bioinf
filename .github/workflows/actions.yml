@@ -45,6 +45,11 @@ jobs:
         run: pip install jupyter
       - name: Install pyroe
         run: pip install pyroe
+      - name: Install salmon
+        shell: bash -l {0}
+        run: |
+          conda config --add channels conda-forge
+          conda install bioconda::salmon
       - name: Install alevin-fry
         shell: bash -l {0}
         run: conda install -c bioconda alevin-fry
