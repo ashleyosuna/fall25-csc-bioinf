@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: "3.10"
       # - name: Set up Homebrew
       #   uses: Homebrew/actions/setup-homebrew@main
       # - name: Install Biopython
@@ -44,7 +44,9 @@ jobs:
       - name: Install jupyter
         run: pip install jupyter
       - name: Install pyroe
-        run: pip install pyroe
+        run: pip install --no-deps pyroe
+      - name: Install pyroe dependencies
+        run: pip install "numpy=1.23.5" "pandas=1.5.3" "scanpy=1.9.8" "anndata=0.9.2" "matplotlib<3.8" "pyranges==0.0.120" "biopython>=1.77
       - name: Install salmon
         shell: bash -l {0}
         run: |
