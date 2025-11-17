@@ -7,12 +7,12 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Install Codon
-        run: |
-          mkdir -p ${HOME}/.codon
-          curl -L https://github.com/exaloop/codon/releases/download/v0.19.3/codon-linux-x86_64.tar.gz | tar zxvf - --strip-components=1 -C ${HOME}/.codon
-          curl -L https://github.com/exaloop/seq/releases/download/v0.11.5/seq-linux-x86_64.tar.gz | tar zxvf - -C ${HOME}/.codon/lib/codon/plugins
-          export PATH=${PATH}:${HOME}/.codon/bin
+      # - name: Install Codon
+      #   run: |
+      #     mkdir -p ${HOME}/.codon
+      #     curl -L https://github.com/exaloop/codon/releases/download/v0.19.3/codon-linux-x86_64.tar.gz | tar zxvf - --strip-components=1 -C ${HOME}/.codon
+      #     curl -L https://github.com/exaloop/seq/releases/download/v0.11.5/seq-linux-x86_64.tar.gz | tar zxvf - -C ${HOME}/.codon/lib/codon/plugins
+      #     export PATH=${PATH}:${HOME}/.codon/bin
       - name: Check out repository code
         uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -46,7 +46,7 @@ jobs:
       - name: Install pyroe
         run: pip install --no-deps pyroe
       - name: Install pyroe dependencies
-        run: pip install "numpy=1.23.5" "pandas=1.5.3" "scanpy=1.9.8" "anndata=0.9.2" "matplotlib<3.8" "pyranges==0.0.120" "biopython>=1.77
+        run: pip install "numpy=1.23.5" "pandas=1.5.3" "scanpy=1.9.8" "anndata=0.9.2" "matplotlib<3.8" "pyranges==0.0.120" "biopython>=1.77"
       - name: Install salmon
         shell: bash -l {0}
         run: |
