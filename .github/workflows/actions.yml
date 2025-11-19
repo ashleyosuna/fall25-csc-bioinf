@@ -54,13 +54,12 @@ jobs:
         run: |
           conda config --add channels conda-forge
           conda install -c bioconda salmon
-      # - name: Install alevin-fry
-      # conda install bioconda::salmon
-      #   shell: bash -l {0}
-      #   run: conda install -c bioconda alevin-fry
-      # - name: Install leiden alg
-      #   shell: bash -l {0}
-      #   run: conda install -c conda-forge leidenalg
+      - name: Install alevin-fry
+        shell: bash -l {0}
+        run: conda install -c bioconda alevin-fry
+      - name: Install leiden alg
+        shell: bash -l {0}
+        run: conda install -c conda-forge leidenalg
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       # - name: Week 1
