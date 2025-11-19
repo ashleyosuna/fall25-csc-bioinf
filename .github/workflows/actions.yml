@@ -57,9 +57,10 @@ jobs:
       - name: Install alevin-fry
         shell: bash -l {0}
         run: conda install -c bioconda alevin-fry
-      - name: Install leiden alg
-        shell: bash -l {0}
-        run: conda install -c conda-forge leidenalg
+      - name: Install leidenalg
+        # shell: bash -l {0}
+        # run: conda install -c conda-forge leidenalg
+        run: pip install leidenalg
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       # - name: Week 1
