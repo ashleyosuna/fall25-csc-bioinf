@@ -51,7 +51,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda config --add channels conda-forge
-          conda install -c conda-forge salmon=1.9.0
+          conda install -c conda-forge salmon
       # - name: Install alevin-fry
       # conda install bioconda::salmon
       #   shell: bash -l {0}
